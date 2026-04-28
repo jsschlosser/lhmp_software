@@ -131,14 +131,14 @@ def Run(raw_data_dict,output_filename):
 	OP_Dictionary['VariableAttributes']["heading"]['long_name'] = f'Heading derived from the IMU.'
 	OP_Dictionary['VariableAttributes']["heading"]['ACVSNC_standard_name'] = 'none'  
 
-	OP_Dictionary["pressure"] = raw_info[:,8].astype(float)
+	OP_Dictionary["IMU_Pressure"] = raw_info[:,8].astype(float)
 	OP_Dictionary['Dims']['pressure'] = 'time'
-	OP_Dictionary['VariableAttributes']["pressure"] = {}
-	OP_Dictionary['VariableAttributes']["pressure"]['_FillValue'] = np.nan
-	OP_Dictionary['VariableAttributes']["pressure"]['short_name'] = 'IMU_P'
-	OP_Dictionary['VariableAttributes']["pressure"]['units'] = 'Pa'
-	OP_Dictionary['VariableAttributes']["pressure"]['long_name'] = f'Air pressure measured by the IMU.'
-	OP_Dictionary['VariableAttributes']["pressure"]['ACVSNC_standard_name'] = 'none'  
+	OP_Dictionary['VariableAttributes']["IMU_Pressure"] = {}
+	OP_Dictionary['VariableAttributes']["IMU_Pressure"]['_FillValue'] = np.nan
+	OP_Dictionary['VariableAttributes']["IMU_Pressure"]['short_name'] = 'IMU_P'
+	OP_Dictionary['VariableAttributes']["IMU_Pressure"]['units'] = 'Pa'
+	OP_Dictionary['VariableAttributes']["IMU_Pressure"]['long_name'] = f'Air pressure measured by the IMU.'
+	OP_Dictionary['VariableAttributes']["IMU_Pressure"]['ACVSNC_standard_name'] = 'none'  
 
 	OP_Dictionary["IMU_Temperature"] = raw_info[:,9].astype(float)
 	OP_Dictionary['Dims']['IMU_Temperature'] = 'time'
