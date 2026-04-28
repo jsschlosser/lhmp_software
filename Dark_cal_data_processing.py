@@ -49,7 +49,7 @@ def DarkCurrent(pathto_raw_dark_cal_data=None):
 
 	ax2.set_xlabel(r"Sensor Temperature ($\degree$C)")
 	ax2.set_ylabel(r"Sensor Signal (DN)")
-	ax2.set_ylim(0,np.nanmax(Img_Data))
+	ax2.set_ylim(np.nanmax(Img_Data)-0.1,np.nanmax(Img_Data)+0.1)
 	plt.tight_layout()
 	plt.savefig(f"../DarkCal/DarkCurrent_plt.jpg", dpi=300)
 	plt.close() # 
@@ -75,8 +75,8 @@ def DarkRead(pathto_raw_dark_cal_data=None):
 	sensor_et = dark_cal_data_dictionary['Detector_Exposure_Time'] # sensor temperature to be processed and plotted
 	Img_Data = image_data.reshape(len(sensor_et),-1) # reformat pixelated sensor data to be visualized against temperature
 	#print(image_data[image_data>0])
-	time_avgd_data = np.mean(image_data,axis=(1,2))
-	time_stdv_data = np.std(image_data,axis=(1,2))
+	#time_avgd_data = np.mean(image_data,axis=(1,2))
+	#time_stdv_data = np.std(image_data,axis=(1,2))
 
 	# set plot visualization parameters.
 	fs =14
@@ -88,16 +88,16 @@ def DarkRead(pathto_raw_dark_cal_data=None):
 	fig,ax2=plt.subplots(1) # create figure and subplot
 
 	# plot sensor data of each pixel against temperature for each time step.
-	#for i in range(len(sensor_et)):
-	#	y = Img_Data[i,:]
-	#	x = np.squeeze(sensor_et[i]*np.ones((1,len(Img_Data[i,:]))))*10**(-6)
-	#	ax2.scatter(x[y>0],y[y>0])
-	ax2.errorbar(sensor_temp,time_avgd_data, yerr=time_stdv_data, linestyle='none', elinewidth=1.5, ecolor='k', zorder=0, capsize=3.5)
-	ax2.plot(sensor_temp,time_avgd_data,marker='o', color='r', linestyle='none', markeredgewidth=1.5, markersize=7.5, markeredgecolor='k', zorder=1)
+	for i in range(len(sensor_et)):
+		y = Img_Data[i,:]
+		x = np.squeeze(sensor_et[i]*np.ones((1,len(Img_Data[i,:]))))*10**(-6)
+		ax2.scatter(x[y>0],y[y>0])
+	#ax2.errorbar(sensor_temp,time_avgd_data, yerr=time_stdv_data, linestyle='none', elinewidth=1.5, ecolor='k', zorder=0, capsize=3.5)
+	#ax2.plot(sensor_temp,time_avgd_data,marker='o', color='r', linestyle='none', markeredgewidth=1.5, markersize=7.5, markeredgecolor='k', zorder=1)
 
 	ax2.set_xlabel(r"Exposure Time (second)")
 	ax2.set_ylabel(r"Sensor Signal (DN)")
-	ax2.set_ylim(0,np.nanmax(Img_Data))
+	ax2.set_ylim(np.nanmax(Img_Data)-0.1,np.nanmax(Img_Data)+0.1)
 	plt.tight_layout()
 	plt.savefig(f"../DarkCal/DarkRead_plt.jpg", dpi=300)
 	plt.close() # 

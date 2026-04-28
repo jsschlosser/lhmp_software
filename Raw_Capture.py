@@ -9,8 +9,8 @@ import time
 import datetime
 #from datetime import date
 #from datetime import datetime
+import IMU10axis
 from zoneinfo import ZoneInfo
-import os
 
 def Run(camera_settings):
     """
@@ -62,6 +62,8 @@ def Run(camera_settings):
         
         start_time = time.time()
         #print(f"Starting image acquisition for {camera_settings['acquisition_duration']} seconds...")
+        IMUdata = IMU10axis.run(10) # run IMU for 10 seconds
+        IMUdata = np.nanmean(IMUdata,axis=0)# take average IMU data
 
         while time.time() - start_time < camera_settings['acquisition_duration']: # Continuously fetch and process images
             with device.start_stream(1):
@@ -89,13 +91,16 @@ def Run(camera_settings):
                 gainvalue = device_nm['GainRaw'].value
                 exposuretimevalue = device_nm['ExposureTimeRaw'].value 
                 DeviceT = device_nm['DeviceTemperature'].value #
-                image_info_list.append([exposuretimevalue, gainvalue, utc_now, seconds_after_midnight, DeviceT])
-                
+                outputdata = [exposuretimevalue, gainvalue, utc_now, seconds_after_midnight, DeviceT]
+                outputdata = np.hstack((outputdata,IMUdata))
+                image_info_list.append(outputdata)
                 device.requeue_buffer(image_buffer)
                 time.sleep(camera_settings['sleep_time'])
 
     output_dictionary = {}
     output_dictionary['image_data_list'] = np.array(image_data_list)
     output_dictionary['image_info_list'] = np.array(image_info_list)
+    #output_dictionary['image_orientation_list'] = np.array(IMUdata)
+
 
     return output_dictionary

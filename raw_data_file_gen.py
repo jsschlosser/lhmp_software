@@ -104,6 +104,60 @@ def Run(raw_data_dict,output_filename):
 	OP_Dictionary['VariableAttributes']["Detector_Temperature"]['long_name'] = f'Temerature of the LHMP detector.'
 	OP_Dictionary['VariableAttributes']["Detector_Temperature"]['ACVSNC_standard_name'] = 'none'  
 
+	OP_Dictionary["pitch"] = raw_info[:,5].astype(float)
+	OP_Dictionary['Dims']['pitch'] = 'time'
+	OP_Dictionary['VariableAttributes']["pitch"] = {}
+	OP_Dictionary['VariableAttributes']["pitch"]['_FillValue'] = np.nan
+	OP_Dictionary['VariableAttributes']["pitch"]['short_name'] = 'pitch'
+	OP_Dictionary['VariableAttributes']["pitch"]['units'] = 'degree'
+	OP_Dictionary['VariableAttributes']["pitch"]['long_name'] = f'Corrected pitch derived from IMU.'
+	OP_Dictionary['VariableAttributes']["pitch"]['ACVSNC_standard_name'] = 'none'  
+
+	OP_Dictionary["roll"] = raw_info[:,6].astype(float)
+	OP_Dictionary['Dims']['roll'] = 'time'
+	OP_Dictionary['VariableAttributes']["roll"] = {}
+	OP_Dictionary['VariableAttributes']["roll"]['_FillValue'] = np.nan
+	OP_Dictionary['VariableAttributes']["roll"]['short_name'] = 'roll'
+	OP_Dictionary['VariableAttributes']["roll"]['units'] = 'degree'
+	OP_Dictionary['VariableAttributes']["roll"]['long_name'] = f'Corrected roll derived from IMU.'
+	OP_Dictionary['VariableAttributes']["roll"]['ACVSNC_standard_name'] = 'none'  
+
+	OP_Dictionary["heading"] = raw_info[:,7].astype(float)
+	OP_Dictionary['Dims']['heading'] = 'time'
+	OP_Dictionary['VariableAttributes']["heading"] = {}
+	OP_Dictionary['VariableAttributes']["heading"]['_FillValue'] = np.nan
+	OP_Dictionary['VariableAttributes']["heading"]['short_name'] = 'IMU_heading'
+	OP_Dictionary['VariableAttributes']["heading"]['units'] = 'degree'
+	OP_Dictionary['VariableAttributes']["heading"]['long_name'] = f'Heading derived from the IMU.'
+	OP_Dictionary['VariableAttributes']["heading"]['ACVSNC_standard_name'] = 'none'  
+
+	OP_Dictionary["pressure"] = raw_info[:,8].astype(float)
+	OP_Dictionary['Dims']['pressure'] = 'time'
+	OP_Dictionary['VariableAttributes']["pressure"] = {}
+	OP_Dictionary['VariableAttributes']["pressure"]['_FillValue'] = np.nan
+	OP_Dictionary['VariableAttributes']["pressure"]['short_name'] = 'IMU_P'
+	OP_Dictionary['VariableAttributes']["pressure"]['units'] = 'Pa'
+	OP_Dictionary['VariableAttributes']["pressure"]['long_name'] = f'Air pressure measured by the IMU.'
+	OP_Dictionary['VariableAttributes']["pressure"]['ACVSNC_standard_name'] = 'none'  
+
+	OP_Dictionary["IMU_Temperature"] = raw_info[:,9].astype(float)
+	OP_Dictionary['Dims']['IMU_Temperature'] = 'time'
+	OP_Dictionary['VariableAttributes']["IMU_Temperature"] = {}
+	OP_Dictionary['VariableAttributes']["IMU_Temperature"]['_FillValue'] = np.nan
+	OP_Dictionary['VariableAttributes']["IMU_Temperature"]['short_name'] = 'IMU_T'
+	OP_Dictionary['VariableAttributes']["IMU_Temperature"]['units'] = 'degC'
+	OP_Dictionary['VariableAttributes']["IMU_Temperature"]['long_name'] = f'Temerature of the IMU.'
+	OP_Dictionary['VariableAttributes']["IMU_Temperature"]['ACVSNC_standard_name'] = 'none'  
+
+	OP_Dictionary["IMU_Altitude"] = raw_info[:,10].astype(float)
+	OP_Dictionary['Dims']['IMU_Altitude'] = 'time'
+	OP_Dictionary['VariableAttributes']["IMU_Altitude"] = {}
+	OP_Dictionary['VariableAttributes']["IMU_Altitude"]['_FillValue'] = np.nan
+	OP_Dictionary['VariableAttributes']["IMU_Altitude"]['short_name'] = 'IMU_Alt'
+	OP_Dictionary['VariableAttributes']["IMU_Altitude"]['units'] = 'm'
+	OP_Dictionary['VariableAttributes']["IMU_Altitude"]['long_name'] = f'Temerature measured by the IMU.'
+	OP_Dictionary['VariableAttributes']["IMU_Altitude"]['ACVSNC_standard_name'] = 'none'  
+
 	OP_Dictionary["Raw_Signal"] = raw_data
 	OP_Dictionary['Dims']['Raw_Signal'] = np.array(['time','H_pixel','V_pixel'])
 	OP_Dictionary['VariableAttributes']["Raw_Signal"] = {}

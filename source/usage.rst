@@ -102,6 +102,40 @@ Install arena api
 			$ pip install -r examples/requirements_lin_arm64.txt
 			$ sudo apt-get install python3-tk
 
+Install GPS support
+	.. note::
+
+		Full details at 'https://ozzmaker.com/berrygps-setup-guide-raspberry-pi/'
+
+	a) Disable the serial console and enable the serial port.
+		.. code-block:: console
+
+			$ sudo raspi-config
+
+		Select "5. Inteferface options".
+		Select "No" to disable the serial console.
+		Select "Yes" to enable the serial port.
+
+	b) Point RPi5 to the correct UART interface '/dev/serial0'.
+		.. code-block:: console
+
+			$ sudo nano /boot/firmware/config.txt
+			
+		Add 'dtparam=uart0_console' to end of file, save, and exit.
+
+	c) Install GPSD services.
+		.. code-block:: console
+
+			$ sudo apt-get install gpsd-clients gpsd -y
+			$ sudo nano /etc/default/gpsd
+
+		Replace 'DEVICES=”″' with 'DEVICES=”/dev/serial0″'
+
+Run GPS service when collecting data
+	.. code-block:: console
+		
+		gpspipe -r -d -l -o /home/pi/`date +”%Y%m%d-%H-%M-%S”`.nmea
+
 Example of running programs in Arena api
 -----------------------------------------
 	a) Activate virtual environment.
