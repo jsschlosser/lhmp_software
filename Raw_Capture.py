@@ -9,7 +9,7 @@ import time
 import datetime
 #from datetime import date
 #from datetime import datetime
-import IMU10axis
+import IMU_read_v2
 from zoneinfo import ZoneInfo
 
 def Run(camera_settings):
@@ -62,11 +62,18 @@ def Run(camera_settings):
         
         start_time = time.time()
         #print(f"Starting image acquisition for {camera_settings['acquisition_duration']} seconds...")
-        IMUdata = IMU10axis.run(10) # run IMU for 10 seconds
-        IMUdata = np.nanmean(IMUdata,axis=0)# take average IMU data
+        #IMUdata = IMU10axis.run(10) # run IMU for 10 seconds
+        #IMUdata = np.nanmean(IMUdata,axis=0)# take average IMU data
 
         while time.time() - start_time < camera_settings['acquisition_duration']: # Continuously fetch and process images
             with device.start_stream(1):
+                RXdata = ser.read(1)#一个一个读
+                RXdata = int(RXdata.hex(),16) #转成16进制显示
+                IMU_read_vw.DueData(RXdata)
+                IMUdata = [acc,gyro,Angle,baro]
+                
+
+
                 image_buffer = device.get_buffer()  # Optional args         
 
                 """

@@ -139,7 +139,7 @@ def Run(raw_data_dict,output_filename):
 	OP_Dictionary['VariableAttributes']["IMU_Pressure"]['units'] = 'Pa'
 	OP_Dictionary['VariableAttributes']["IMU_Pressure"]['long_name'] = f'Air pressure measured by the IMU.'
 	OP_Dictionary['VariableAttributes']["IMU_Pressure"]['ACVSNC_standard_name'] = 'none'  
-
+	'''
 	OP_Dictionary["IMU_Temperature"] = raw_info[:,9].astype(float)
 	OP_Dictionary['Dims']['IMU_Temperature'] = 'time'
 	OP_Dictionary['VariableAttributes']["IMU_Temperature"] = {}
@@ -148,8 +148,9 @@ def Run(raw_data_dict,output_filename):
 	OP_Dictionary['VariableAttributes']["IMU_Temperature"]['units'] = 'degC'
 	OP_Dictionary['VariableAttributes']["IMU_Temperature"]['long_name'] = f'Temerature of the IMU.'
 	OP_Dictionary['VariableAttributes']["IMU_Temperature"]['ACVSNC_standard_name'] = 'none'  
+	'''
 
-	OP_Dictionary["IMU_Altitude"] = raw_info[:,10].astype(float)
+	OP_Dictionary["IMU_Altitude"] = raw_info[:,9].astype(float)
 	OP_Dictionary['Dims']['IMU_Altitude'] = 'time'
 	OP_Dictionary['VariableAttributes']["IMU_Altitude"] = {}
 	OP_Dictionary['VariableAttributes']["IMU_Altitude"]['_FillValue'] = np.nan

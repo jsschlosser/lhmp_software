@@ -6,6 +6,7 @@ port = '/dev/ttyUSB0' # USB serial port linux
 #port = 'COM12' # USB serial port  windowns
 baud = 9600   # Same baud rate as the INERTIAL navigation module
 ser = serial.Serial(port, baud, timeout=0.5)
+global ser
 print("IMU serial is opened:", ser.is_open)
     
 def run():
@@ -20,6 +21,8 @@ def run():
     ACCData = [0.0]*8
     GYROData = [0.0]*8
     AngleData = [0.0]*8
+    BaroData = [0.0]*8
+
     FrameState = 0  # What is the state of the judgment
     CheckSum = 0  # Sum check bit   
 
@@ -29,9 +32,10 @@ def run():
     acc = [0.0]*3
     gyro = [0.0]*3
     Angle = [0.0]*3 
+    baro = [0.0]*2 
 
     def GetDataDeal(list_buf):
-        global acc,gyro,Angle   
+        global acc,gyro,Angle,baro
 
         if(list_buf[buf_length - 1] != CheckSum): #校验码不正确
             return
@@ -49,8 +53,13 @@ def run():
         elif(list_buf[1] == 0x53): #姿态角度输出
             for i in range(6): 
                 AngleData[i] = list_buf[2+i] #有效数据赋值
-            Angle = get_angle(AngleData)    
+            Angle = get_angle(AngleData) 
 
+        elif(list_buf[1] == 0x56): #姿态角度输出
+            for i in range(8): 
+                BaroData[i] = list_buf[2+i] #有效数据赋值
+            baro = get_angle(BaroData) 
+           
         #print("acc:%10.3f %10.3f %10.3f \n" % (acc[0],acc[1],acc[2]))
         #print("gyro:%10.3f %10.3f %10.3f \n" % (gyro[0],gyro[1],gyro[2]))
         #print("angle:%10.3f %10.3f %10.3f \n" % (Angle[0],Angle[1],Angle[2]))   
@@ -80,6 +89,7 @@ def run():
                 start = 0 #清0
                 GetDataDeal(RxBuff)  #处理数据
                 
+
 
     def get_acc(datahex):
         axl = datahex[0]
@@ -139,13 +149,31 @@ def run():
         if angle_z >= k_angle:
             angle_z -= 2 * k_angle
         return angle_x, angle_y, angle_z    
+
+
+
+    def get_baro(datahex)
+        p0 = datahex[0]
+        p1 = datahex[1]
+        p2 = datahex[2]
+        p3 = datahex[3]
+        h0 = datahex[4]
+        h1 = datahex[5]
+        h2 = datahex[6]
+        h3 = datahex[7]   
+
+        baro_pressure=(p3<<24)|(p2<<16)|(p1<<8)|p0     
+        baro_alt = (h3<<24)|(h2<<16)|(h1<<8)|h0
+
+        return baro_pressure, baro_alt
+
     i1 = 0
     return_data = []
     while i1<100:
         RXdata = ser.read(1)#一个一个读
         RXdata = int(RXdata.hex(),16) #转成16进制显示
         DueData(RXdata)
-        imu_data = [acc,gyro,Angle]
+        imu_data = [acc,gyro,Angle,baro]
         return_data.append(imu_data)
         i1 += 1
     #np.save("IMU_data.txt",return_data)
