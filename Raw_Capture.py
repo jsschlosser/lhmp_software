@@ -74,7 +74,7 @@ def Run(camera_settings):
             with device.start_stream(1):
                 RXdata = ser.read(1)#一个一个读
                 RXdata = int(RXdata.hex(),16) #转成16进制显示
-                IMU_read_vw.DueData(RXdata)
+                IMU_read_v2.DueData(RXdata)
                 IMUdata = [Angle,baro]
 
                 image_buffer = device.get_buffer()  # Optional args         
