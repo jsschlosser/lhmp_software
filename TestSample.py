@@ -8,15 +8,17 @@ def Run():
 
 	"""  
 	camera_settings = {}
-	camera_settings['acquisition_duration'] = 30
+	camera_settings['acquisition_duration'] = 30 # seconds
 	camera_settings['GainAuto'] = 'Off' #'Continuous' 'Off'
 	camera_settings['ExposureAuto'] = 'Continuous'#'Continuous' 'Off'
 	camera_settings['GainSetting'] = 0
-	camera_settings['ExposureTimeSetting'] = 140000#5147373
-	camera_settings['sleep_time'] = 0.1
+	camera_settings['ExposureTimeSetting'] = 140000#5147373 # us
+	camera_settings['sleep_time'] = 0.1 # seconds
+	camera_Settings['save_rate'] = 30 # seconds
 	pxl_format_list = ['BayerRG8','PolarizedDolp_BayerRG8','PolarizedAolp_BayerRG8']
 	for pxl_frmt in pxl_format_list:
 		camera_settings['PixelFormat'] = pxl_frmt
 		print(f"Camera Settings: {camera_settings}")
-		output_dictionary = Raw_Capture.Run(camera_settings)
-		raw_data_file_gen.Run(output_dictionary,f'{camera_settings["PixelFormat"]}_test.nc')
+		camera_settings['output_filename'] = f'{camera_settings["PixelFormat"]}_test.nc'
+		Raw_Capture.Run(camera_settings)
+		#raw_data_file_gen.Run(output_dictionary,f'{camera_settings["PixelFormat"]}_test.nc')

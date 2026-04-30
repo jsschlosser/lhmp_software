@@ -11,7 +11,9 @@ import datetime
 #from datetime import datetime
 import IMU_read_v2
 from zoneinfo import ZoneInfo
-
+import raw_data_file_gen_v2
+genfile = raw_data_file_gen_v2.gen_file
+adddata = raw_data_file_gen_v2.append_data
 def Run(camera_settings):
     """
     Function for capturing samples with the LHMP.
@@ -64,15 +66,15 @@ def Run(camera_settings):
         #print(f"Starting image acquisition for {camera_settings['acquisition_duration']} seconds...")
         #IMUdata = IMU10axis.run(10) # run IMU for 10 seconds
         #IMUdata = np.nanmean(IMUdata,axis=0)# take average IMU data
-
-        while time.time() - start_time < camera_settings['acquisition_duration']: # Continuously fetch and process images
+        i_count = 0
+        timedif = time.time() - start_time
+        while timedif < camera_settings['acquisition_duration']: # Continuously fetch and process images
+            timedif = time.time() - start_time
             with device.start_stream(1):
                 RXdata = ser.read(1)#一个一个读
                 RXdata = int(RXdata.hex(),16) #转成16进制显示
                 IMU_read_vw.DueData(RXdata)
-                IMUdata = [acc,gyro,Angle,baro]
-                
-
+                IMUdata = [Angle,baro]
 
                 image_buffer = device.get_buffer()  # Optional args         
 
@@ -86,7 +88,7 @@ def Run(camera_settings):
                 nparray_reshaped = np.ctypeslib.as_array(image_buffer.pdata,
                                                         (image_buffer.height,
                                                         image_buffer.width))        
-                image_data_list.append(nparray_reshaped.copy()) # Store the image data
+                
                 utc_now = datetime.datetime.now(ZoneInfo("UTC"))            
 
                 # Calculate the time difference (timedelta)
@@ -100,14 +102,22 @@ def Run(camera_settings):
                 DeviceT = device_nm['DeviceTemperature'].value #
                 outputdata = [exposuretimevalue, gainvalue, utc_now, seconds_after_midnight, DeviceT]
                 outputdata = np.hstack((outputdata,IMUdata))
+                
+                image_data_list.append(nparray_reshaped.copy()) # Store the image data
                 image_info_list.append(outputdata)
-                device.requeue_buffer(image_buffer)
-                time.sleep(camera_settings['sleep_time'])
+                output_dictionary = {}
+                output_dictionary['image_data_list'] = np.array(image_data_list)
+                output_dictionary['image_info_list'] = np.array(image_info_list)
+                if i_count == 0:
+                    genfile(output_dictionary,camera_settings['output_filename'])
+                elif timedif==camera_settings['acquisition_duration']-1:
+                    adddata(output_dictionary,camera_settings['output_filename'])
+                elif timedif % camera_Settings['save_rate'] == 0:
+                    adddata(output_dictionary,camera_settings['output_filename'])
 
-    output_dictionary = {}
-    output_dictionary['image_data_list'] = np.array(image_data_list)
-    output_dictionary['image_info_list'] = np.array(image_info_list)
+                device.requeue_buffer(image_buffer)    
+
     #output_dictionary['image_orientation_list'] = np.array(IMUdata)
 
 
-    return output_dictionary
+    #return output_dictionary
