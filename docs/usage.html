@@ -50,18 +50,12 @@
 <li class="toctree-l2"><a class="reference internal" href="#example-of-running-programs-in-arena-api">Example of running programs in Arena api</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#instructions-for-building-sphinx-documentation-locally">Instructions for building sphinx documentation locally</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#test-the-instrument-functionality">Test the instrument functionality</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#TestSample.Run"><code class="docutils literal notranslate"><span class="pre">Run()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Raw_Capture.Run"><code class="docutils literal notranslate"><span class="pre">Run()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#raw_data_file_gen.Run"><code class="docutils literal notranslate"><span class="pre">Run()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#TestPlot.standard_test"><code class="docutils literal notranslate"><span class="pre">standard_test()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#TestPlot.demosaic_test"><code class="docutils literal notranslate"><span class="pre">demosaic_test()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#perform-dark-calibration-measurements">Perform dark calibration measurements</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#Dark_cal_data_collection.DarkCurrent"><code class="docutils literal notranslate"><span class="pre">DarkCurrent()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#Dark_cal_data_collection.DarkRead"><code class="docutils literal notranslate"><span class="pre">DarkRead()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#perform-dark-calibration-measurements">Perform dark calibration measurements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#visualize-dark-calibration-measurements">Visualize dark calibration measurements</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#Dark_cal_data_processing.DarkCurrent"><code class="docutils literal notranslate"><span class="pre">DarkCurrent()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#Dark_cal_data_processing.DarkRead"><code class="docutils literal notranslate"><span class="pre">DarkRead()</span></code></a></li>
@@ -234,6 +228,44 @@
 </li>
 </ol>
 </dd>
+<dt>Install GPS support</dt><dd><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Full details at ‘<a class="reference external" href="https://ozzmaker.com/berrygps-setup-guide-raspberry-pi/">https://ozzmaker.com/berrygps-setup-guide-raspberry-pi/</a>’</p>
+</div>
+<ol class="loweralpha">
+<li><dl>
+<dt>Disable the serial console and enable the serial port.</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>raspi-config
+</pre></div>
+</div>
+<p>Select “5. Inteferface options”.
+Select “No” to disable the serial console.
+Select “Yes” to enable the serial port.</p>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt>Point RPi5 to the correct UART interface ‘/dev/serial0’.</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>nano<span class="w"> </span>/boot/firmware/config.txt
+</pre></div>
+</div>
+<p>Add ‘dtparam=uart0_console’ to end of file, save, and exit.</p>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt>Install GPSD services.</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>gpsd-clients<span class="w"> </span>gpsd<span class="w"> </span>-y
+<span class="gp">$ </span>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/default/gpsd
+</pre></div>
+</div>
+<p>Replace ‘DEVICES=”″’ with ‘DEVICES=”/dev/serial0″’</p>
+</dd>
+</dl>
+</li>
+</ol>
+</dd>
+<dt>Run GPS service when collecting data</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">gpspipe -r -d -l -o /home/pi/`date +”%Y%m%d-%H-%M-%S”`.nmea</span>
+</pre></div>
+</div>
+</dd>
 </dl>
 </section>
 <section id="example-of-running-programs-in-arena-api">
@@ -319,29 +351,6 @@
 <section id="test-the-instrument-functionality">
 <h2>Test the instrument functionality<a class="headerlink" href="#test-the-instrument-functionality" title="Link to this heading"></a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="TestSample.Run">
-<span class="sig-prename descclassname"><span class="pre">TestSample.</span></span><span class="sig-name descname"><span class="pre">Run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#TestSample.Run" title="Link to this definition"></a></dt>
-<dd><p>Function for inputting camera settings and acquiring images from the LHMP. Writes output level 0 data to netCDF file for processing.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="Raw_Capture.Run">
-<span class="sig-prename descclassname"><span class="pre">Raw_Capture.</span></span><span class="sig-name descname"><span class="pre">Run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_settings</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Raw_Capture.Run" title="Link to this definition"></a></dt>
-<dd><p>Function for capturing samples with the LHMP.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>camera_settings</strong> (<em>numpy dictionary</em>) – dictionary containing the gain and exposure time camera settings as well as the acquisition duration</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>dictionary of raw image data in digital number along with the image metadata of exposure time (us), gain, acquisition time (UTC), sensor temperature (degC)</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>numpy dictionary</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="raw_data_file_gen.Run">
 <span class="sig-prename descclassname"><span class="pre">raw_data_file_gen.</span></span><span class="sig-name descname"><span class="pre">Run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#raw_data_file_gen.Run" title="Link to this definition"></a></dt>
 <dd><p>Function for capturing samples with the LHMP.</p>
@@ -370,18 +379,6 @@
 </section>
 <section id="perform-dark-calibration-measurements">
 <h2>Perform dark calibration measurements<a class="headerlink" href="#perform-dark-calibration-measurements" title="Link to this heading"></a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="Dark_cal_data_collection.DarkCurrent">
-<span class="sig-prename descclassname"><span class="pre">Dark_cal_data_collection.</span></span><span class="sig-name descname"><span class="pre">DarkCurrent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Dark_cal_data_collection.DarkCurrent" title="Link to this definition"></a></dt>
-<dd><p>Function for capturing a set of dark current measurements by running this on starup with the instrument with the lense cap on.</p>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="Dark_cal_data_collection.DarkRead">
-<span class="sig-prename descclassname"><span class="pre">Dark_cal_data_collection.</span></span><span class="sig-name descname"><span class="pre">DarkRead</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Dark_cal_data_collection.DarkRead" title="Link to this definition"></a></dt>
-<dd><p>Function for capturing a set of dark read measurements by varying expsure time after running the DarkCurrent routine.</p>
-</dd></dl>
-
 </section>
 <section id="visualize-dark-calibration-measurements">
 <h2>Visualize dark calibration measurements<a class="headerlink" href="#visualize-dark-calibration-measurements" title="Link to this heading"></a></h2>
