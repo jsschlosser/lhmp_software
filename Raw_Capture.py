@@ -121,6 +121,7 @@ def Run(camera_settings):
                     adddata(output_dictionary,camera_settings['output_filename'])
                     image_data_list = [] 
                     image_info_list = [] 
+                i_count +=1
                 device.requeue_buffer(image_buffer)    
 
     #output_dictionary['image_orientation_list'] = np.array(IMUdata)
