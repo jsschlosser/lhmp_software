@@ -67,6 +67,7 @@ def Run(camera_settings):
         #IMUdata = IMU10axis.run(10) # run IMU for 10 seconds
         #IMUdata = np.nanmean(IMUdata,axis=0)# take average IMU data
         i_count = 0
+        output_dictionary = {}
         timedif = time.time() - start_time
         while timedif < camera_settings['acquisition_duration']: # Continuously fetch and process images
             timedif = time.time() - start_time
@@ -105,16 +106,21 @@ def Run(camera_settings):
                 
                 image_data_list.append(nparray_reshaped.copy()) # Store the image data
                 image_info_list.append(outputdata)
-                output_dictionary = {}
+                
                 output_dictionary['image_data_list'] = np.array(image_data_list)
                 output_dictionary['image_info_list'] = np.array(image_info_list)
                 if i_count == 0:
                     genfile(output_dictionary,camera_settings['output_filename'])
+                    image_data_list = [] 
+                    image_info_list = [] 
                 elif timedif==camera_settings['acquisition_duration']-1:
                     adddata(output_dictionary,camera_settings['output_filename'])
-                elif timedif % camera_Settings['save_rate'] == 0:
+                    image_data_list = [] 
+                    image_info_list = [] 
+                elif i_count-1 % camera_Settings['save_rate'] == 0:
                     adddata(output_dictionary,camera_settings['output_filename'])
-
+                    image_data_list = [] 
+                    image_info_list = [] 
                 device.requeue_buffer(image_buffer)    
 
     #output_dictionary['image_orientation_list'] = np.array(IMUdata)
