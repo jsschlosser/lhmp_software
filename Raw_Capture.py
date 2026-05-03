@@ -115,7 +115,7 @@ def Run(camera_settings):
                     adddata(output_dictionary,camera_settings['output_filename'])
                     image_data_list = [] 
                     image_info_list = [] 
-                elif i_count-1 % camera_Settings['save_rate'] == 0:
+                elif i_count-1 % camera_settings['save_rate'] == 0:
                     adddata(output_dictionary,camera_settings['output_filename'])
                     image_data_list = [] 
                     image_info_list = [] 

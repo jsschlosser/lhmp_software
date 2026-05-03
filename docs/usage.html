@@ -126,11 +126,6 @@
 <li><p>Ethernet Cable.</p></li>
 </ol>
 </dd>
-<dt>Setup Hardware</dt><dd><ol class="loweralpha simple">
-<li><p>Connect camera to Raspberry Pi via ethernet cable.</p></li>
-<li><p>Power Raspberry Pi.</p></li>
-</ol>
-</dd>
 <dt>Install ArenaSDK Software (ArenaSDK_v0.1.78_Linux_ARM64)</dt><dd><div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Full details in ‘README_ARM64.txt’</p>
@@ -199,6 +194,13 @@
 <span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>netCDF4
 </pre></div>
 </div>
+</div></blockquote>
+<p>Set Camera IP address and set IPv Settings</p>
+<blockquote>
+<div><p>Select Advanced Options under the ‘Wirelss LAN’ dropdown menu.</p>
+<p>Navigate to ‘IPv6 Settings’ tab and set the ‘Method’ to ‘Disabled’</p>
+<p>Navigate to ‘IPv4 Settings’ tab and set the ‘Method’ to ‘Manual’</p>
+<p>While in ‘IPv4 Settings’, add the following IP address to the ‘Address’ list: 169.254.4.205 with a ‘Netmask’ of 16.</p>
 </div></blockquote>
 <dl>
 <dt>Install arena api</dt><dd><div class="admonition note">
