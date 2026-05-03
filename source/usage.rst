@@ -26,10 +26,6 @@ Hardware Requirements
 	
 	3) Ethernet Cable.
 
-Setup Hardware
-	a) Connect camera to Raspberry Pi via ethernet cable.
-
-	b) Power Raspberry Pi.
 
 Install ArenaSDK Software (ArenaSDK_v0.1.78_Linux_ARM64)
 	.. note::
@@ -69,7 +65,7 @@ Install ArenaSDK Software (ArenaSDK_v0.1.78_Linux_ARM64)
 	    
 	    .. note::
 
-	   			replace #.#.# with current version.
+	   		replace #.#.# with current version.
 
 	f) Run the ArenaSDK_Linux_ARM64.conf file	
 		.. code-block:: console
@@ -84,7 +80,17 @@ Install HDF5 and netCDF4
 		$ sudo apt install libnetcdf-dev libhdf5-dev
 		$ pip install netCDF4
 
-		
+Set Camera IP address and set IPv Settings
+
+		Select Advanced Options under the 'Wirelss LAN' dropdown menu. 
+
+		Navigate to 'IPv6 Settings' tab and set the 'Method' to 'Disabled'
+
+		Navigate to 'IPv4 Settings' tab and set the 'Method' to 'Manual'
+
+		While in 'IPv4 Settings', add the following IP address to the 'Address' list: 169.254.4.205 with a 'Netmask' of 16.
+
+
 Install arena api
 	.. note::
 
