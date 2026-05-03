@@ -4,7 +4,7 @@ from datetime import time
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import nc_write_v2
-#ncwrite = nc_write.simple
+ncwrite = nc_write_v2
 
 def gen_file(raw_data_dict,output_filename):
 	"""
