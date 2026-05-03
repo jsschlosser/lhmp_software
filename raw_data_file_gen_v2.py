@@ -181,7 +181,7 @@ def append_data(raw_data_dict,output_filename):
 	OP_Dictionary["Detector_Exposure_Time"] = raw_info[:,0].astype(int)
 	OP_Dictionary["Detector_Gain"] = raw_info[:,1].astype(float)
 	OP_Dictionary["Detector_Temperature"] = raw_info[:,4].astype(float)
-	OP_Dictionary["pitch"] = raw_info[:,5].astypraw_infoe(float)
+	OP_Dictionary["pitch"] = raw_info[:,5].astype(float)
 	OP_Dictionary["roll"] = raw_info[:,6].astype(float)
 	OP_Dictionary["heading"] = raw_info[:,7].astype(float)
 	OP_Dictionary["IMU_Pressure"] = raw_info[:,8].astype(float)
