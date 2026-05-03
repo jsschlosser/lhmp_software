@@ -73,7 +73,7 @@ def Run(camera_settings):
                 RXdata = ser.read(1)#一个一个读
                 RXdata = int(RXdata.hex(),16) #转成16进制显示
                 IMU_read_v2.DueData(RXdata)
-                IMUdata = np.htack((IMU_read_v2.Angle,IMU_read_v2.baro))
+                IMUdata = np.hstack((IMU_read_v2.Angle,IMU_read_v2.baro))
                 print(IMUdata)
                 image_buffer = device.get_buffer()  # Optional args         
 
