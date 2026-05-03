@@ -184,7 +184,7 @@ def append_data(raw_data_dict,output_filename):
 	OP_Dictionary["pitch"] = raw_info[:,5].astypraw_infoe(float)
 	OP_Dictionary["roll"] = raw_info[:,6].astype(float)
 	OP_Dictionary["heading"] = raw_info[:,7].astype(float)
-	OP_Dictionary["IMU_Pressure"] = [:,8].astype(float)
+	OP_Dictionary["IMU_Pressure"] = raw_info[:,8].astype(float)
 	OP_Dictionary["IMU_Altitude"] = raw_info[:,9].astype(float)
 	OP_Dictionary["Raw_Signal"] = raw_data
 	ncwrite.write_to(output_filename, OP_Dictionary) 
