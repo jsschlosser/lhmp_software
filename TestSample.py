@@ -14,7 +14,7 @@ def Run():
 	camera_settings['GainSetting'] = 0
 	camera_settings['ExposureTimeSetting'] = 140000#5147373 # us
 	camera_settings['sleep_time'] = 0.1 # seconds
-	camera_Settings['save_rate'] = 30 # seconds
+	camera_settings['save_rate'] = 30 # seconds
 	pxl_format_list = ['BayerRG8','PolarizedDolp_BayerRG8','PolarizedAolp_BayerRG8']
 	for pxl_frmt in pxl_format_list:
 		camera_settings['PixelFormat'] = pxl_frmt

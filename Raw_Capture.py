@@ -34,7 +34,7 @@ def Run(camera_settings):
         today_utc_date = utc_now.date()             
         midnight_utc = datetime.datetime.combine(today_utc_date, datetime.time(0,0,0), tzinfo=ZoneInfo("UTC"))    
 
-        devices = system.create_device()
+        #devices = system.create_device()
         device = system.select_device(devices)  
 
         tl_stream_nodemap = device.tl_stream_nodemap # Get device stream nodemap   

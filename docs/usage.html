@@ -106,7 +106,7 @@
 </section>
 <section id="configuring-the-raspberry-pi">
 <h2>Configuring the Raspberry Pi<a class="headerlink" href="#configuring-the-raspberry-pi" title="Link to this heading"></a></h2>
-<p>This section summarizes the steps required to setup the environment needed to run a GigE Vision (i.e., genicam) camera on a Raspberry Pi 4b. Here we use a Pheonix 5.0 Polarization camera (LUCID Vision Labs Inc., 2023) that is built around Sony’s IMX250MYR CMOS.</p>
+<p>This section summarizes the steps required to setup the environment needed to run a GigE Vision (i.e., genicam) camera on a Raspberry Pi 5. Here we use a Pheonix 5.0 Polarization camera (LUCID Vision Labs Inc., 2023) that is built around Sony’s IMX250MYR CMOS.</p>
 <dl>
 <dt>Hardware Requirements</dt><dd><ol class="arabic simple">
 <li><dl class="simple">
@@ -137,15 +137,15 @@
 </div>
 <ol class="loweralpha">
 <li><dl>
-<dt>Set jumbo frames</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span><span class="w"> </span>enp0s8<span class="w"> </span>mtu<span class="w"> </span><span class="m">9000</span>
+<dt>Set jumbo frames</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span><span class="w"> </span>eth1<span class="w"> </span>mtu<span class="w"> </span><span class="m">9000</span>
 </pre></div>
 </div>
 </dd>
 </dl>
 </li>
 <li><dl>
-<dt>Set receive buffers</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>ethtool<span class="w"> </span>-g<span class="w"> </span>enp0s8
-<span class="gp">$ </span>sudo<span class="w"> </span>ethtool<span class="w"> </span>-G<span class="w"> </span>enp0s8<span class="w"> </span>rx<span class="w"> </span><span class="m">4096</span>
+<dt>Set receive buffers</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>ethtool<span class="w"> </span>-g<span class="w"> </span>eth1
+<span class="gp">$ </span>sudo<span class="w"> </span>ethtool<span class="w"> </span>-G<span class="w"> </span>eth1<span class="w"> </span>rx<span class="w"> </span><span class="m">4096</span>
 </pre></div>
 </div>
 </dd>
@@ -170,14 +170,20 @@
 </dl>
 </li>
 <li><dl>
-<dt>Extract the tarball to your desired location:</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>tar<span class="w"> </span>-xvzf<span class="w"> </span>ArenaSDK_Linux_ARM64.tar.gz
+<dt>Extract the tarball to your desired location:</dt><dd><blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>tar<span class="w"> </span>-xvzf<span class="w"> </span>ArenaSDK_v#.#.#_Linux_ARM64.tar.gz
 </pre></div>
+</div>
+</div></blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>replace #.#.# with current version.</p>
 </div>
 </dd>
 </dl>
 </li>
 <li><dl>
-<dt>Run the ArenaSDK_Linux_ARM64.conf file</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>~/Documents/ArenaSDK_v0.1.78_Linux_ARM64/ArenaSDK_Linux_ARM64
+<dt>Run the ArenaSDK_Linux_ARM64.conf file</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>~/Documents/ArenaSDK_Linux_ARM64
 <span class="gp">$ </span>sudo<span class="w"> </span>sh<span class="w"> </span>Arena_SDK_ARM64.conf
 </pre></div>
 </div>
@@ -186,13 +192,23 @@
 </li>
 </ol>
 </dd>
+</dl>
+<p>Install HDF5 and netCDF4</p>
+<blockquote>
+<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>libnetcdf-dev<span class="w"> </span>libhdf5-dev
+<span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>netCDF4
+</pre></div>
+</div>
+</div></blockquote>
+<dl>
 <dt>Install arena api</dt><dd><div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Full details in ‘~/arena_api-2.7.1-py3-none-any/README.txt’</p>
+<p>Full details in ‘~/arena_api-#.#.#-py3-none-any/README.txt’. Replace #.#.# with current version.</p>
 </div>
 <ol class="loweralpha">
 <li><dl>
-<dt>Setup virtual environment.</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>myvirtualenv
+<dt>Setup virtual environment.</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>~
+<span class="gp">$ </span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>myvirtualenv
 </pre></div>
 </div>
 </dd>
@@ -217,8 +233,8 @@
 </ol>
 <ol class="loweralpha" start="3">
 <li><dl>
-<dt>Install arena api.</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>arena_api-2.7.1-py3-none-any
-<span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>arena_api-2.7.1-py3-none-any.whl
+<dt>Install arena api.</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>~/Documents/arena_api-#.#.#-py3-none-any
+<span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>arena_api-#.#.#-py3-none-any.whl
 <span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>examples/requirements_lin_arm64.txt
 <span class="gp">$ </span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>python3-tk
 </pre></div>

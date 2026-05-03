@@ -15,7 +15,7 @@ Copyright
 Configuring the Raspberry Pi
 ----------------------------
 
-This section summarizes the steps required to setup the environment needed to run a GigE Vision (i.e., genicam) camera on a Raspberry Pi 4b. Here we use a Pheonix 5.0 Polarization camera (LUCID Vision Labs Inc., 2023) that is built around Sony's IMX250MYR CMOS.
+This section summarizes the steps required to setup the environment needed to run a GigE Vision (i.e., genicam) camera on a Raspberry Pi 5. Here we use a Pheonix 5.0 Polarization camera (LUCID Vision Labs Inc., 2023) that is built around Sony's IMX250MYR CMOS.
 
 Hardware Requirements
 	1) Any GigE vision camera should work however it must be a GenICam compliant machine vision camera/device. 
@@ -40,13 +40,13 @@ Install ArenaSDK Software (ArenaSDK_v0.1.78_Linux_ARM64)
 	a) Set jumbo frames
 		.. code-block:: console
 
-			$ sudo ip link set enp0s8 mtu 9000
+			$ sudo ip link set eth1 mtu 9000
 
 	b) Set receive buffers
 		.. code-block:: console
 
-			$ sudo ethtool -g enp0s8
-			$ sudo ethtool -G enp0s8 rx 4096
+			$ sudo ethtool -g eth1
+			$ sudo ethtool -G eth1 rx 4096
 
 	c) Set socket buffer size
 		.. code-block:: console
@@ -65,28 +65,40 @@ Install ArenaSDK Software (ArenaSDK_v0.1.78_Linux_ARM64)
 	e) Extract the tarball to your desired location:	
 		.. code-block:: console
 
-	   		$ tar -xvzf ArenaSDK_Linux_ARM64.tar.gz
+	   		$ tar -xvzf ArenaSDK_v#.#.#_Linux_ARM64.tar.gz
 	    
+	    .. note::
+
+	   			replace #.#.# with current version.
+
 	f) Run the ArenaSDK_Linux_ARM64.conf file	
 		.. code-block:: console
 
-	   		$ cd ~/Documents/ArenaSDK_v0.1.78_Linux_ARM64/ArenaSDK_Linux_ARM64
+	   		$ cd ~/Documents/ArenaSDK_Linux_ARM64
 	   		$ sudo sh Arena_SDK_ARM64.conf
 
+Install HDF5 and netCDF4
 
+	.. code-block:: console
+
+		$ sudo apt install libnetcdf-dev libhdf5-dev
+		$ pip install netCDF4
+
+		
 Install arena api
 	.. note::
 
-		Full details in '~/arena_api-2.7.1-py3-none-any/README.txt'
+		Full details in '~/arena_api-#.#.#-py3-none-any/README.txt'. Replace #.#.# with current version.
 
 	a) Setup virtual environment.
 		.. code-block:: console
-	
+			
+			$ cd ~	
 			$ python3 -m venv myvirtualenv
 
 	b) Activate virtual environment.
 		.. code-block:: console
-	
+			
 			$ source ~/myvirtualenv/bin/activate
 
 	d) Install standard openCV.
@@ -97,8 +109,8 @@ Install arena api
 	c) Install arena api.
 		.. code-block:: console
 
-			$ cd arena_api-2.7.1-py3-none-any
-			$ pip install arena_api-2.7.1-py3-none-any.whl
+			$ cd ~/Documents/arena_api-#.#.#-py3-none-any
+			$ pip install arena_api-#.#.#-py3-none-any.whl
 			$ pip install -r examples/requirements_lin_arm64.txt
 			$ sudo apt-get install python3-tk
 

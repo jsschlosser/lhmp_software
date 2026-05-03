@@ -70,9 +70,9 @@ def Initiate(path, data, Dims, GlobParams):
     ncfile.close(); print('Dataset is closed!')
 
 
-def write_to(path, data)
+def write_to(path, data):
 
-    with Dataset(path,mode='a') as ds
+    with Dataset(path,mode='a') as ds:
         current_len = len(ds.dimensions['time'])
         for key, values in data.items():
 
