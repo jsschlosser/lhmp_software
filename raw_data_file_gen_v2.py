@@ -172,14 +172,19 @@ def gen_file(raw_data_dict,output_filename):
 	ncwrite.Initiate(output_filename, OP_Dictionary, dims, GlobParams) 
 
 def append_data(raw_data_dict,output_filename):
+
+	raw_data = raw_data_dict['image_data_list']
+	raw_info = raw_data_dict['image_info_list']
+	OP_Dictionary = {}
+
 	OP_Dictionary["time"] = raw_info[:,3].astype(int)
 	OP_Dictionary["Detector_Exposure_Time"] = raw_info[:,0].astype(int)
 	OP_Dictionary["Detector_Gain"] = raw_info[:,1].astype(float)
 	OP_Dictionary["Detector_Temperature"] = raw_info[:,4].astype(float)
-	OP_Dictionary["pitch"] = raw_info[:,5].astype(float)
+	OP_Dictionary["pitch"] = raw_info[:,5].astypraw_infoe(float)
 	OP_Dictionary["roll"] = raw_info[:,6].astype(float)
 	OP_Dictionary["heading"] = raw_info[:,7].astype(float)
-	OP_Dictionary["IMU_Pressure"] = raw_info[:,8].astype(float)
+	OP_Dictionary["IMU_Pressure"] = [:,8].astype(float)
 	OP_Dictionary["IMU_Altitude"] = raw_info[:,9].astype(float)
 	OP_Dictionary["Raw_Signal"] = raw_data
 	ncwrite.write_to(output_filename, OP_Dictionary) 
