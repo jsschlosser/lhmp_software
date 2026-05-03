@@ -169,7 +169,7 @@ def gen_file(raw_data_dict,output_filename):
 	OP_Dictionary['VariableAttributes']["Raw_Signal"]['ACVSNC_standard_name'] = 'none'  
 	OP_Dictionary['VariableAttributes']["Raw_Signal"]['ancillary'] = 'et, gain, detector_T'
 	
-	ncwrite.initiate(output_filename, OP_Dictionary, dims, GlobParams) 
+	ncwrite.Initiate(output_filename, OP_Dictionary, dims, GlobParams) 
 
 def append_data(raw_data_dict,output_filename):
 	OP_Dictionary["time"] = raw_info[:,3].astype(int)
