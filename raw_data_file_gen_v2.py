@@ -132,7 +132,7 @@ def gen_file(raw_data_dict,output_filename):
 	OP_Dictionary['VariableAttributes']["heading"]['ACVSNC_standard_name'] = 'none'  
 
 	OP_Dictionary["IMU_Pressure"] = raw_info[:,8].astype(float)
-	OP_Dictionary['Dims']['pressure'] = 'time'
+	OP_Dictionary['Dims']['IMU_Pressure'] = 'time'
 	OP_Dictionary['VariableAttributes']["IMU_Pressure"] = {}
 	OP_Dictionary['VariableAttributes']["IMU_Pressure"]['_FillValue'] = np.nan
 	OP_Dictionary['VariableAttributes']["IMU_Pressure"]['short_name'] = 'IMU_P'
