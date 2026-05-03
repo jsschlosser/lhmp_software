@@ -10,6 +10,7 @@ import datetime
 #from datetime import date
 #from datetime import datetime
 import IMU_read_v2
+ser = IMU_read_v2.ser
 from zoneinfo import ZoneInfo
 import raw_data_file_gen_v2
 genfile = raw_data_file_gen_v2.gen_file
