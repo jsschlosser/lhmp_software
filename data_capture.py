@@ -6,12 +6,12 @@ import cv2
 import numpy as np 
 import time
 import datetime
-import IMU_read_v2
-ser = IMU_read_v2.ser
+import IMU_read
+ser = IMU_read.ser
 from zoneinfo import ZoneInfo
-import raw_data_file_gen_v2
-genfile = raw_data_file_gen_v2.gen_file
-adddata = raw_data_file_gen_v2.append_data
+import data_file_save
+genfile = data_file_save.gen_file
+adddata = data_file_save.append_data
 def Run(camera_settings):
     """
     Function for capturing samples with the LHMP.
@@ -72,8 +72,8 @@ def Run(camera_settings):
             with device.start_stream():
                 RXdata = ser.read(1)#一个一个读
                 RXdata = int(RXdata.hex(),16) #转成16进制显示
-                IMU_read_v2.DueData(RXdata)
-                IMUdata = np.hstack((IMU_read_v2.Angle,IMU_read_v2.baro))
+                IMU_read.DueData(RXdata)
+                IMUdata = np.hstack((IMU_read.Angle,IMU_read.baro))
                 print(IMUdata)
                 image_buffer = device.get_buffer()  # Optional args         
 

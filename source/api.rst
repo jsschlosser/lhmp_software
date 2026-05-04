@@ -4,11 +4,12 @@ API
 .. autosummary::
    :toctree: generated
 
-   TestSample
-   Raw_Capture
-   TestPlot
-   Dark_cal_data_processing
+   IMU_read
    Dark_cal_data_collection
-   raw_data_file_gen
+   TestPlot
+   data_capture
+   Dark_cal_data_processing
+   TestSample
+   data_file_save
    nc_write
 

@@ -1,7 +1,6 @@
-import Raw_Capture
+import data_capture
 import cv2
 import numpy as np 
-import raw_data_file_gen
 def DarkCurrent():
 	"""
 	Function for capturing a set of dark current measurements by running this on starup with the instrument with the lense cap on.
@@ -18,8 +17,8 @@ def DarkCurrent():
 	camera_settings['sleep_time'] = 0.25
 	camera_settings['PixelFormat'] = 'BayerRG8'
 	print(f"Camera Settings: {camera_settings}")
-	output_dictionary = Raw_Capture.Run(camera_settings)
-	raw_data_file_gen.Run(output_dictionary,'DarkCurrent.nc')
+	camera_settings['output_filename'] = f'Dark_Current.nc'
+	output_dictionary = data_capture.Run(camera_settings)
 
 
 def DarkRead():
@@ -32,7 +31,7 @@ def DarkRead():
 	output_dictionary['image_data_list'] = None
 	output_dictionary['image_info_list'] = None
 	camera_settings = {}
-	camera_settings['acquisition_duration'] = 10
+	camera_settings['acquisition_duration'] = 1000
 	camera_settings['sleep_time'] = 0.5
 	camera_settings['GainAuto'] = 'Off' #'Continuous' #'Off'
 	camera_settings['ExposureAuto'] = 'Off'#'Off'
@@ -41,12 +40,6 @@ def DarkRead():
 	for i1 in np.logspace(np.log10(10000),np.log10(150000),25):
 		camera_settings['ExposureTimeSetting'] = int(i1)#5147373
 		#print(f"Camera Settings: {camera_settings}")
-		OP_dict = Raw_Capture.Run(camera_settings)
-		for key in OP_dict:
-			if output_dictionary[key] is None:
-				output_dictionary[key] = OP_dict[key]
-			else:
-				output_dictionary[key] = np.vstack((output_dictionary[key],OP_dict[key]))
+		camera_settings['output_filename'] = f'DarkRead_ExpTime-{int(i1/1000)}ms.nc'
+		OP_dict = data_capture.Run(camera_settings)
 
-
-	raw_data_file_gen.Run(output_dictionary,'DarkRead.nc')

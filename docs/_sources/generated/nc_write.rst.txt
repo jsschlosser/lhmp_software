@@ -8,5 +8,6 @@
 
    .. autosummary::
    
-      simple
+      Initiate
+      write_to
    

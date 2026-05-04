@@ -4,9 +4,9 @@ from datetime import time
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import nc_write
-ncwrite = nc_write.simple
+ncwrite = nc_write
 
-def Run(raw_data_dict,output_filename):
+def gen_file(raw_data_dict,output_filename):
 	"""
 	Function for capturing samples with the LHMP.
 
@@ -54,7 +54,7 @@ def Run(raw_data_dict,output_filename):
 	GlobParams['VersionID'] = f'R0'
 
 	
-	dims['time'] = len(raw_data[:,0,0])
+	dims['time'] = None #len(raw_data[:,0,0])
 	OP_Dictionary["time"] = raw_info[:,3].astype(int)
 	OP_Dictionary['Dims']["time"] = 'time'
 	OP_Dictionary['VariableAttributes']["time"] = {}
@@ -132,7 +132,7 @@ def Run(raw_data_dict,output_filename):
 	OP_Dictionary['VariableAttributes']["heading"]['ACVSNC_standard_name'] = 'none'  
 
 	OP_Dictionary["IMU_Pressure"] = raw_info[:,8].astype(float)
-	OP_Dictionary['Dims']['pressure'] = 'time'
+	OP_Dictionary['Dims']['IMU_Pressure'] = 'time'
 	OP_Dictionary['VariableAttributes']["IMU_Pressure"] = {}
 	OP_Dictionary['VariableAttributes']["IMU_Pressure"]['_FillValue'] = np.nan
 	OP_Dictionary['VariableAttributes']["IMU_Pressure"]['short_name'] = 'IMU_P'
@@ -169,4 +169,22 @@ def Run(raw_data_dict,output_filename):
 	OP_Dictionary['VariableAttributes']["Raw_Signal"]['ACVSNC_standard_name'] = 'none'  
 	OP_Dictionary['VariableAttributes']["Raw_Signal"]['ancillary'] = 'et, gain, detector_T'
 	
-	ncwrite(output_filename, OP_Dictionary, dims, GlobParams) 
+	ncwrite.Initiate(output_filename, OP_Dictionary, dims, GlobParams) 
+
+def append_data(raw_data_dict,output_filename):
+
+	raw_data = raw_data_dict['image_data_list']
+	raw_info = raw_data_dict['image_info_list']
+	OP_Dictionary = {}
+
+	OP_Dictionary["time"] = raw_info[:,3].astype(int)
+	OP_Dictionary["Detector_Exposure_Time"] = raw_info[:,0].astype(int)
+	OP_Dictionary["Detector_Gain"] = raw_info[:,1].astype(float)
+	OP_Dictionary["Detector_Temperature"] = raw_info[:,4].astype(float)
+	OP_Dictionary["pitch"] = raw_info[:,5].astype(float)
+	OP_Dictionary["roll"] = raw_info[:,6].astype(float)
+	OP_Dictionary["heading"] = raw_info[:,7].astype(float)
+	OP_Dictionary["IMU_Pressure"] = raw_info[:,8].astype(float)
+	OP_Dictionary["IMU_Altitude"] = raw_info[:,9].astype(float)
+	OP_Dictionary["Raw_Signal"] = raw_data
+	ncwrite.write_to(output_filename, OP_Dictionary) 

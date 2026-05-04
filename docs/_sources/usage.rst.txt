@@ -143,7 +143,7 @@ Example of running programs in Arena api
 	
 			$ python3
 			>>> import TestSample
-			>>> TestSample.Run()
+			>>>  TestSample.Run()
 
 
 Instructions for building sphinx documentation locally
@@ -189,10 +189,10 @@ Test the instrument functionality
 .. autofunction:: TestSample.Run
 
 
-.. autofunction:: Raw_Capture.Run
+.. autofunction:: data_caputre.Run
 
 
-.. autofunction:: raw_data_file_gen.Run
+.. autofunction:: data_file_save.Run
 
 
 .. autofunction:: TestPlot.standard_test
