@@ -15,19 +15,19 @@ Copyright
 Configuring the Raspberry Pi
 ----------------------------
 
-This section summarizes the steps required to setup the environment needed to run a GigE Vision (i.e., genicam) camera on a Raspberry Pi 5. Here we use a Pheonix 5.0 Polarization camera (LUCID Vision Labs Inc., 2023) that is built around Sony's IMX250MYR CMOS.
+This section summarizes the steps required to setup the environment needed to run a GigE Vision (i.e., genicam) camera on a Raspberry Pi 5. Here we use a Pheonix 5.0 Polarization camera (LUCID Vision Labs Inc., 2023) that is built around Sony's IMX250MYR/IMX264MYR CMOS.
 
 Hardware Requirements
 	1) Any GigE vision camera should work however it must be a GenICam compliant machine vision camera/device. 
 		a) Power supply.
 	
-	2) Rasberry Pi 4b running Debian GNU/Linux 12 (bookworm) x64. Prefer remote connection with Raspberry Pi Connect. 
+	2) Rasberry Pi 5 running Debian GNU/Linux 12 (trixie) x64. Prefer remote connection with Raspberry Pi Connect. 
 		a) Power supply.
 	
 	3) Ethernet Cable.
 
 
-Install ArenaSDK Software (ArenaSDK_v0.1.78_Linux_ARM64)
+Install ArenaSDK Software (ArenaSDK_v#.#.#_Linux_ARM64)
 	.. note::
 
 		Full details in 'README_ARM64.txt'
@@ -119,12 +119,12 @@ Install GPS support
 			$ sudo apt-get install gpsd-clients gpsd -y
 			$ sudo nano /etc/default/gpsd
 
-		Replace 'DEVICES=”″' with 'DEVICES=”/dev/serial0″'
+		Replace 'DEVICES=""' with 'DEVICES="/dev/serial0"'
 
 Run GPS service when collecting data
 	.. code-block:: console
 		
-		gpspipe -r -d -l -o /home/pi/`date +”%Y%m%d-%H-%M-%S”`.nmea
+		gpspipe -r -d -l -o /home/pi/`date +"%Y%m%d-%H-%M-%S"`.nmea
 
 Example of running and plottind data
 ------------------------------------
@@ -138,17 +138,17 @@ Example of running and plottind data
 		.. code-block:: console
 	
 			$ python3
-			$ import test_sample
-			$ test_sample.run()
+			>>> import test_sample
+			>>> test_sample.run()
 
 	d) Demosaic and plot test data 
 		.. code-block:: console
 
 			$ pip install polanalyser
 			$ python3
-			$ import test_plot
-			$ test_plot.demosaic_test()
-			$ test_plot.standard_test()
+			>>> import test_plot
+			>>> test_plot.demosaic_test()
+			>>> test_plot.standard_test()
 
 Instructions for building sphinx documentation locally
 ------------------------------------------------------
