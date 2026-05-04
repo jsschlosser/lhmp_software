@@ -138,16 +138,16 @@ Example of running and plottind data
 		.. code-block:: console
 	
 			$ python3
-			>>> import test_sample
-			>>> test_sample.run()
+			$ import test_sample
+			$ test_sample.run()
 
 	d) Demosaic and plot test data 
 		.. code-block:: console
 			$ pip install polanalyser
 			$ python3
-			>>> import test_plot
-			>>> test_plot.demosaic_test()
-			>>> test_plot.standard_test()
+			$ import test_plot
+			$ test_plot.demosaic_test()
+			$ test_plot.standard_test()
 
 Instructions for building sphinx documentation locally
 ------------------------------------------------------
