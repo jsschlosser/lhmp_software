@@ -128,10 +128,6 @@ Run GPS service when collecting data
 
 Example of running programs in Arena api
 -----------------------------------------
-	a) Activate virtual environment.
-		.. code-block:: console
-	
-			$ source ~/myvirtualenv/bin/activate
 
 	b) Set appropriate directory with python scripts.
 		.. code-block:: console
@@ -150,13 +146,6 @@ Instructions for building sphinx documentation locally
 ------------------------------------------------------
 
 This section describes how to build the sphinx documentation locally. 
-
-
-	a) Activate virtual environment.
-		.. code-block:: console
-
-			$ source ~/myvirtualenv/bin/activate
-
 
 	b) Install matplotlib.
 		.. code-block:: console
