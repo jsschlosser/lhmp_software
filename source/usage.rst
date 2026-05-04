@@ -126,7 +126,7 @@ Run GPS service when collecting data
 		
 		gpspipe -r -d -l -o /home/pi/`date +"%Y%m%d-%H-%M-%S"`.nmea
 
-Example of running and plottind data
+Example of running and plotting data
 ------------------------------------
 
 	b) Set appropriate directory with python scripts.
@@ -204,7 +204,7 @@ Test the instrument functionality
 .. autofunction:: nc_write.initiate
 
 
-..autofunction:: nc_write.append
+.. autofunction:: nc_write.append
 
 
 Perform dark calibration measurements
