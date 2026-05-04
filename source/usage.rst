@@ -134,13 +134,20 @@ Example of running programs in Arena api
 	
 			$ cd ~/Documents
 
-	c) Run desired python script.
+	c) Run sample python script.
 		.. code-block:: console
 	
 			$ python3
 			>>> import TestSample
-			>>>  TestSample.Run()
+			>>> TestSample.Run()
 
+	d) Demosaic and plot test data 
+		.. code-block:: console
+
+			$ python3
+			>>> import TestPlot
+			>>> TestPlot.demosaic_test()
+			>>> TestPlot.standard_test()
 
 Instructions for building sphinx documentation locally
 ------------------------------------------------------
