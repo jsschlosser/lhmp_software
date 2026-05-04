@@ -138,16 +138,16 @@ Example of running and plottind data
 		.. code-block:: console
 	
 			$ python3
-			>>> import TestSample
-			>>> TestSample.Run()
+			>>> import test_sample
+			>>> test_sample.run()
 
 	d) Demosaic and plot test data 
 		.. code-block:: console
 			$ pip install polanalyser
 			$ python3
-			>>> import TestPlot
-			>>> TestPlot.demosaic_test()
-			>>> TestPlot.standard_test()
+			>>> import test_plot
+			>>> test_plot.demosaic_test()
+			>>> test_plot.standard_test()
 
 Instructions for building sphinx documentation locally
 ------------------------------------------------------
@@ -182,32 +182,45 @@ This section describes how to build the sphinx documentation locally.
 Test the instrument functionality 
 ---------------------------------
 
-.. autofunction:: TestSample.Run
+.. autofunction:: test_sample.run
 
 
-.. autofunction:: data_caputre.Run
+.. autofunction:: data_capture.run
 
 
-.. autofunction:: data_file_save.Run
+.. autofunction:: data_file_save.gen_file
 
 
-.. autofunction:: TestPlot.standard_test
+.. autofunction:: data_file_save.append_data
 
 
-.. autofunction:: TestPlot.demosaic_test
+.. autofunction:: test_plot.standard_test
+
+
+.. autofunction:: test_plot.demosaic_test
+
+
+.. autofunction:: nc_write.initiate
+
+
+..autofunction:: nc_write.append
+
 
 Perform dark calibration measurements
 -------------------------------------
 
-.. autofunction:: Dark_cal_data_collection.DarkCurrent
+.. autofunction:: dark_cal_data_collection.dark_current
 
 
-.. autofunction:: Dark_cal_data_collection.DarkRead
+.. autofunction:: dark_cal_data_collection.dark_read
+
 
 Visualize dark calibration measurements
 ---------------------------------------
 
-.. autofunction:: Dark_cal_data_processing.DarkCurrent
+.. autofunction:: dark_cal_data_processing.dark_current
 
 
-.. autofunction:: Dark_cal_data_processing.DarkRead
+.. autofunction:: dark_cal_data_processing.dark_read
+
+

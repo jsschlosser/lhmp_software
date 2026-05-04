@@ -54,7 +54,7 @@ def DarkCurrent(pathto_raw_dark_cal_data=None):
 	plt.savefig(f"../DarkCal/DarkCurrent_plt.jpg", dpi=300)
 	plt.close() # 
 
-def DarkRead(pathto_raw_dark_cal_data=None):
+def dark_read(pathto_raw_dark_cal_data=None):
 	"""
 	Takes LHMP dark measurements (DN) and plots them against exposure time (us). Requires numpy, matplotlib, and pylab.
 

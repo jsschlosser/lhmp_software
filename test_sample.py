@@ -19,4 +19,4 @@ def Run():
 		camera_settings['PixelFormat'] = pxl_frmt
 		print(f"Camera Settings: {camera_settings}")
 		camera_settings['output_filename'] = f'{camera_settings["PixelFormat"]}_test.nc'
-		data_capture.Run(camera_settings)
+		data_capture.run(camera_settings)

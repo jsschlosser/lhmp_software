@@ -4,7 +4,6 @@ from datetime import time
 from datetime import datetime
 from zoneinfo import ZoneInfo
 import nc_write
-ncwrite = nc_write
 
 def gen_file(raw_data_dict,output_filename):
 	"""
@@ -169,7 +168,7 @@ def gen_file(raw_data_dict,output_filename):
 	OP_Dictionary['VariableAttributes']["Raw_Signal"]['ACVSNC_standard_name'] = 'none'  
 	OP_Dictionary['VariableAttributes']["Raw_Signal"]['ancillary'] = 'et, gain, detector_T'
 	
-	ncwrite.Initiate(output_filename, OP_Dictionary, dims, GlobParams) 
+	nc_write.initiate(output_filename, OP_Dictionary, dims, GlobParams) 
 
 def append_data(raw_data_dict,output_filename):
 
@@ -187,4 +186,4 @@ def append_data(raw_data_dict,output_filename):
 	OP_Dictionary["IMU_Pressure"] = raw_info[:,8].astype(float)
 	OP_Dictionary["IMU_Altitude"] = raw_info[:,9].astype(float)
 	OP_Dictionary["Raw_Signal"] = raw_data
-	ncwrite.write_to(output_filename, OP_Dictionary) 
+	nc_write.append(output_filename, OP_Dictionary) 

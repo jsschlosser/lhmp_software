@@ -5,11 +5,11 @@ API
    :toctree: generated
 
    IMU_read
-   Dark_cal_data_collection
-   TestPlot
+   dark_cal_data_collection
+   test_plot
    data_capture
-   Dark_cal_data_processing
-   TestSample
+   dark_cal_data_processing
+   test_sample
    data_file_save
    nc_write
 

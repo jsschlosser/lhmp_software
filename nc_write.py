@@ -1,6 +1,6 @@
 from netCDF4 import Dataset # Note: python is case-sensitive!
 import numpy as np
-def Initiate(path, data, Dims, GlobParams):
+def initiate(path, data, Dims, GlobParams):
     """
     Basic function for saving data in netCDF format.
 
@@ -70,7 +70,7 @@ def Initiate(path, data, Dims, GlobParams):
     ncfile.close(); print('Dataset is closed!')
 
 
-def write_to(path, data):
+def append(path, data):
 
     with Dataset(path,mode='a') as ds:
         current_len = len(ds.dimensions['time'])

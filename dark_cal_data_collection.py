@@ -1,7 +1,7 @@
 import data_capture
 import cv2
 import numpy as np 
-def DarkCurrent():
+def dark_current():
 	"""
 	Function for capturing a set of dark current measurements by running this on starup with the instrument with the lense cap on.
 
@@ -18,12 +18,12 @@ def DarkCurrent():
 	camera_settings['PixelFormat'] = 'BayerRG8'
 	print(f"Camera Settings: {camera_settings}")
 	camera_settings['output_filename'] = f'Dark_Current.nc'
-	output_dictionary = data_capture.Run(camera_settings)
+	output_dictionary = data_capture.run(camera_settings)
 
 
-def DarkRead():
+def dark_read():
 	"""
-	Function for capturing a set of dark read measurements by varying expsure time after running the DarkCurrent routine. 
+	Function for capturing a set of dark read measurements by varying expsure time after running the dark_current routine. 
 	
 	"""  
 
@@ -41,5 +41,5 @@ def DarkRead():
 		camera_settings['ExposureTimeSetting'] = int(i1)#5147373
 		#print(f"Camera Settings: {camera_settings}")
 		camera_settings['output_filename'] = f'DarkRead_ExpTime-{int(i1/1000)}ms.nc'
-		OP_dict = data_capture.Run(camera_settings)
+		OP_dict = data_capture.run(camera_settings)
 

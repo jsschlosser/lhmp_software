@@ -12,7 +12,7 @@ from zoneinfo import ZoneInfo
 import data_file_save
 genfile = data_file_save.gen_file
 adddata = data_file_save.append_data
-def Run(camera_settings):
+defrRun(camera_settings):
     """
     Function for capturing samples with the LHMP.
 
@@ -62,8 +62,7 @@ def Run(camera_settings):
         
         start_time = time.time()
         #print(f"Starting image acquisition for {camera_settings['acquisition_duration']} seconds...")
-        #IMUdata = IMU10axis.run(10) # run IMU for 10 seconds
-        #IMUdata = np.nanmean(IMUdata,axis=0)# take average IMU data
+
         i_count = 0
         output_dictionary = {}
         timedif = time.time() - start_time
