@@ -132,38 +132,14 @@
 </div>
 <ol class="loweralpha">
 <li><dl>
-<dt>Set jumbo frames</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span><span class="w"> </span>eth1<span class="w"> </span>mtu<span class="w"> </span><span class="m">9000</span>
+<dt>Set jumbo frames</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>ip<span class="w"> </span>link<span class="w"> </span><span class="nb">set</span><span class="w"> </span>eth0<span class="w"> </span>mtu<span class="w"> </span><span class="m">9000</span>
 </pre></div>
 </div>
 </dd>
 </dl>
 </li>
-<li><dl>
-<dt>Set receive buffers</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>ethtool<span class="w"> </span>-g<span class="w"> </span>eth1
-<span class="gp">$ </span>sudo<span class="w"> </span>ethtool<span class="w"> </span>-G<span class="w"> </span>eth1<span class="w"> </span>rx<span class="w"> </span><span class="m">4096</span>
-</pre></div>
-</div>
-</dd>
-</dl>
-</li>
-<li><dl>
-<dt>Set socket buffer size</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>sh<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;echo &#39;net.core.rmem_default=33554432&#39; &gt;&gt; /etc/sysctl.conf&quot;</span>
-<span class="gp">$ </span>sudo<span class="w"> </span>sh<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;echo &#39;net.core.rmem_max=33554432&#39; &gt;&gt; /etc/sysctl.conf&quot;</span>
-<span class="gp">$ </span>sudo<span class="w"> </span>sysctl<span class="w"> </span>-p
-</pre></div>
-</div>
-</dd>
-</dl>
-</li>
-<li><dl>
-<dt>Reverse path filtering</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>sh<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;echo &#39;net.core.rmem_default=33554432&#39; &gt;&gt; /etc/sysctl.conf&quot;</span>
-<span class="gp">$ </span>sudo<span class="w"> </span>sh<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;echo &#39;net.core.rmem_max=33554432&#39; &gt;&gt; /etc/sysctl.conf&quot;</span>
-<span class="gp">$ </span>sudo<span class="w"> </span>sysctl<span class="w"> </span>-p
-</pre></div>
-</div>
-</dd>
-</dl>
-</li>
+</ol>
+<ol class="loweralpha" start="5">
 <li><dl>
 <dt>Extract the tarball to your desired location:</dt><dd><blockquote>
 <div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>tar<span class="w"> </span>-xvzf<span class="w"> </span>ArenaSDK_v#.#.#_Linux_ARM64.tar.gz
@@ -209,31 +185,12 @@
 </div>
 <ol class="loweralpha">
 <li><dl>
-<dt>Setup virtual environment.</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>~
-<span class="gp">$ </span>python3<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>myvirtualenv
-</pre></div>
-</div>
-</dd>
-</dl>
-</li>
-<li><dl>
-<dt>Activate virtual environment.</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">source</span><span class="w"> </span>~/myvirtualenv/bin/activate
-</pre></div>
-</div>
-</dd>
-</dl>
-</li>
-</ol>
-<ol class="loweralpha" start="4">
-<li><dl>
 <dt>Install standard openCV.</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>opencv-python
 </pre></div>
 </div>
 </dd>
 </dl>
 </li>
-</ol>
-<ol class="loweralpha" start="3">
 <li><dl>
 <dt>Install arena api.</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>~/Documents/arena_api-#.#.#-py3-none-any
 <span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>arena_api-#.#.#-py3-none-any.whl
@@ -255,9 +212,9 @@
 <dt>Disable the serial console and enable the serial port.</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>raspi-config
 </pre></div>
 </div>
-<p>Select “5. Inteferface options”.
-Select “No” to disable the serial console.
-Select “Yes” to enable the serial port.</p>
+<p>Select “5. Inteferface options”.</p>
+<p>Select “No” to disable the serial console.</p>
+<p>Select “Yes” to enable the serial port.</p>
 </dd>
 </dl>
 </li>
@@ -306,8 +263,8 @@ Select “Yes” to enable the serial port.</p>
 </li>
 <li><dl>
 <dt>Run desired python script.</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>python3
-<span class="gp">$ </span>import<span class="w"> </span>TestSample
-<span class="gp">$ </span>TestSample.Run<span class="o">()</span>
+<span class="go">&gt;&gt;&gt; import TestSample</span>
+<span class="go">&gt;&gt;&gt; TestSample.Run()</span>
 </pre></div>
 </div>
 </dd>

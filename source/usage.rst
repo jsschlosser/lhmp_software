@@ -36,27 +36,8 @@ Install ArenaSDK Software (ArenaSDK_v0.1.78_Linux_ARM64)
 	a) Set jumbo frames
 		.. code-block:: console
 
-			$ sudo ip link set eth1 mtu 9000
+			$ sudo ip link set eth0 mtu 9000
 
-	b) Set receive buffers
-		.. code-block:: console
-
-			$ sudo ethtool -g eth1
-			$ sudo ethtool -G eth1 rx 4096
-
-	c) Set socket buffer size
-		.. code-block:: console
-
-			$ sudo sh -c "echo 'net.core.rmem_default=33554432' >> /etc/sysctl.conf"
-			$ sudo sh -c "echo 'net.core.rmem_max=33554432' >> /etc/sysctl.conf"
-			$ sudo sysctl -p
-		
-	d) Reverse path filtering
-		.. code-block:: console
-
-			$ sudo sh -c "echo 'net.core.rmem_default=33554432' >> /etc/sysctl.conf"
-			$ sudo sh -c "echo 'net.core.rmem_max=33554432' >> /etc/sysctl.conf"
-			$ sudo sysctl -p
 
 	e) Extract the tarball to your desired location:	
 		.. code-block:: console
@@ -96,23 +77,12 @@ Install arena api
 
 		Full details in '~/arena_api-#.#.#-py3-none-any/README.txt'. Replace #.#.# with current version.
 
-	a) Setup virtual environment.
-		.. code-block:: console
-			
-			$ cd ~	
-			$ python3 -m venv myvirtualenv
-
-	b) Activate virtual environment.
-		.. code-block:: console
-			
-			$ source ~/myvirtualenv/bin/activate
-
-	d) Install standard openCV.
+	a) Install standard openCV.
 		.. code-block:: console
 	
 			$ pip install opencv-python
 
-	c) Install arena api.
+	b) Install arena api.
 		.. code-block:: console
 
 			$ cd ~/Documents/arena_api-#.#.#-py3-none-any
@@ -131,7 +101,9 @@ Install GPS support
 			$ sudo raspi-config
 
 		Select "5. Inteferface options".
+
 		Select "No" to disable the serial console.
+
 		Select "Yes" to enable the serial port.
 
 	b) Point RPi5 to the correct UART interface '/dev/serial0'.
@@ -170,8 +142,8 @@ Example of running programs in Arena api
 		.. code-block:: console
 	
 			$ python3
-			$ import TestSample
-			$ TestSample.Run()
+			>>> import TestSample
+			>>> TestSample.Run()
 
 
 Instructions for building sphinx documentation locally
