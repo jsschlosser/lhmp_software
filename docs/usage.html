@@ -7,15 +7,15 @@
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Usage &mdash; LHMP 1.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="_static/documentation_options.js?v=f2a433a1"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -50,6 +50,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#example-of-running-and-plottind-data">Example of running and plottind data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#instructions-for-building-sphinx-documentation-locally">Instructions for building sphinx documentation locally</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#test-the-instrument-functionality">Test the instrument functionality</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#test_sample.run"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#data_capture.run"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#data_file_save.gen_file"><code class="docutils literal notranslate"><span class="pre">gen_file()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#data_file_save.append_data"><code class="docutils literal notranslate"><span class="pre">append_data()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#test_plot.standard_test"><code class="docutils literal notranslate"><span class="pre">standard_test()</span></code></a></li>
@@ -57,7 +59,11 @@
 <li class="toctree-l3"><a class="reference internal" href="#nc_write.initiate"><code class="docutils literal notranslate"><span class="pre">initiate()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#perform-dark-calibration-measurements">Perform dark calibration measurements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#perform-dark-calibration-measurements">Perform dark calibration measurements</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dark_cal_data_collection.dark_current"><code class="docutils literal notranslate"><span class="pre">dark_current()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dark_cal_data_collection.dark_read"><code class="docutils literal notranslate"><span class="pre">dark_read()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#visualize-dark-calibration-measurements">Visualize dark calibration measurements</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#dark_cal_data_processing.dark_current"><code class="docutils literal notranslate"><span class="pre">dark_current()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#dark_cal_data_processing.dark_read"><code class="docutils literal notranslate"><span class="pre">dark_read()</span></code></a></li>
@@ -265,8 +271,15 @@
 </dd>
 </dl>
 </li>
-<li><dl class="simple">
-<dt>Demosaic and plot test data</dt><dd></dd>
+<li><dl>
+<dt>Demosaic and plot test data</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>polanalyser
+<span class="gp">$ </span>python3
+<span class="gp">$ </span>import<span class="w"> </span>test_plot
+<span class="gp">$ </span>test_plot.demosaic_test<span class="o">()</span>
+<span class="gp">$ </span>test_plot.standard_test<span class="o">()</span>
+</pre></div>
+</div>
+</dd>
 </dl>
 </li>
 </ol>
@@ -317,6 +330,29 @@
 </section>
 <section id="test-the-instrument-functionality">
 <h2>Test the instrument functionality<a class="headerlink" href="#test-the-instrument-functionality" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="test_sample.run">
+<span class="sig-prename descclassname"><span class="pre">test_sample.</span></span><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#test_sample.run" title="Link to this definition"></a></dt>
+<dd><p>Function for inputting camera settings and acquiring images from the LHMP. Writes output level 0 data to netCDF file for processing.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="data_capture.run">
+<span class="sig-prename descclassname"><span class="pre">data_capture.</span></span><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_settings</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_capture.run" title="Link to this definition"></a></dt>
+<dd><p>Function for capturing samples with the LHMP.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>camera_settings</strong> (<em>numpy dictionary</em>) – dictionary containing the gain and exposure time camera settings as well as the acquisition duration</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dictionary of raw image data in digital number along with the image metadata of exposure time (us), gain, acquisition time (UTC), sensor temperature (degC)</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="data_file_save.gen_file">
 <span class="sig-prename descclassname"><span class="pre">data_file_save.</span></span><span class="sig-name descname"><span class="pre">gen_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">raw_data_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_filename</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_file_save.gen_file" title="Link to this definition"></a></dt>
@@ -377,6 +413,18 @@
 </section>
 <section id="perform-dark-calibration-measurements">
 <h2>Perform dark calibration measurements<a class="headerlink" href="#perform-dark-calibration-measurements" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="dark_cal_data_collection.dark_current">
+<span class="sig-prename descclassname"><span class="pre">dark_cal_data_collection.</span></span><span class="sig-name descname"><span class="pre">dark_current</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dark_cal_data_collection.dark_current" title="Link to this definition"></a></dt>
+<dd><p>Function for capturing a set of dark current measurements by running this on starup with the instrument with the lense cap on.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="dark_cal_data_collection.dark_read">
+<span class="sig-prename descclassname"><span class="pre">dark_cal_data_collection.</span></span><span class="sig-name descname"><span class="pre">dark_read</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dark_cal_data_collection.dark_read" title="Link to this definition"></a></dt>
+<dd><p>Function for capturing a set of dark read measurements by varying expsure time after running the dark_current routine.</p>
+</dd></dl>
+
 </section>
 <section id="visualize-dark-calibration-measurements">
 <h2>Visualize dark calibration measurements<a class="headerlink" href="#visualize-dark-calibration-measurements" title="Link to this heading"></a></h2>

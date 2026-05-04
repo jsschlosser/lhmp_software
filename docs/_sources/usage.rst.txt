@@ -143,6 +143,7 @@ Example of running and plottind data
 
 	d) Demosaic and plot test data 
 		.. code-block:: console
+
 			$ pip install polanalyser
 			$ python3
 			$ import test_plot

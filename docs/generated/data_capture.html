@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>nc_write &mdash; LHMP 1.0 documentation</title>
+  <title>data_capture &mdash; LHMP 1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
@@ -19,7 +19,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="prev" title="data_file_save" href="data_file_save.html" /> 
+    <link rel="next" title="dark_cal_data_processing" href="dark_cal_data_processing.html" />
+    <link rel="prev" title="test_plot" href="test_plot.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -47,11 +48,11 @@
 <li class="toctree-l2"><a class="reference internal" href="IMU_read.html">IMU_read</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dark_cal_data_collection.html">dark_cal_data_collection</a></li>
 <li class="toctree-l2"><a class="reference internal" href="test_plot.html">test_plot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_capture.html">data_capture</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">data_capture</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dark_cal_data_processing.html">dark_cal_data_processing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="test_sample.html">test_sample</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data_file_save.html">data_file_save</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">nc_write</a></li>
+<li class="toctree-l2"><a class="reference internal" href="nc_write.html">nc_write</a></li>
 </ul>
 </li>
 </ul>
@@ -71,9 +72,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../api.html">API</a></li>
-      <li class="breadcrumb-item active">nc_write</li>
+      <li class="breadcrumb-item active">data_capture</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/generated/nc_write.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/data_capture.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -81,16 +82,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-nc_write">
-<span id="nc-write"></span><h1>nc_write<a class="headerlink" href="#module-nc_write" title="Link to this heading"></a></h1>
+  <section id="module-data_capture">
+<span id="data-capture"></span><h1>data_capture<a class="headerlink" href="#module-data_capture" title="Link to this heading"></a></h1>
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">append</span></code>(path, data)</p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../usage.html#nc_write.initiate" title="nc_write.initiate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">initiate</span></code></a>(path, data, Dims, GlobParams)</p></td>
-<td><p>Basic function for saving data in netCDF format.</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="../usage.html#data_capture.run" title="data_capture.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>(camera_settings)</p></td>
+<td><p>Function for capturing samples with the LHMP.</p></td>
 </tr>
 </tbody>
 </table>
@@ -100,7 +98,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="data_file_save.html" class="btn btn-neutral float-left" title="data_file_save" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="test_plot.html" class="btn btn-neutral float-left" title="test_plot" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="dark_cal_data_processing.html" class="btn btn-neutral float-right" title="dark_cal_data_processing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
