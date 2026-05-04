@@ -47,7 +47,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#acknowledgements">Acknowledgements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#copyright">Copyright</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#configuring-the-raspberry-pi">Configuring the Raspberry Pi</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#example-of-running-and-plottind-data">Example of running and plottind data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#example-of-running-and-plotting-data">Example of running and plotting data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#instructions-for-building-sphinx-documentation-locally">Instructions for building sphinx documentation locally</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#test-the-instrument-functionality">Test the instrument functionality</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#test_sample.run"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
@@ -57,6 +57,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#test_plot.standard_test"><code class="docutils literal notranslate"><span class="pre">standard_test()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#test_plot.demosaic_test"><code class="docutils literal notranslate"><span class="pre">demosaic_test()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#nc_write.initiate"><code class="docutils literal notranslate"><span class="pre">initiate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#nc_write.append"><code class="docutils literal notranslate"><span class="pre">append()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#perform-dark-calibration-measurements">Perform dark calibration measurements</a><ul>
@@ -114,7 +115,7 @@
 </section>
 <section id="configuring-the-raspberry-pi">
 <h2>Configuring the Raspberry Pi<a class="headerlink" href="#configuring-the-raspberry-pi" title="Link to this heading"></a></h2>
-<p>This section summarizes the steps required to setup the environment needed to run a GigE Vision (i.e., genicam) camera on a Raspberry Pi 5. Here we use a Pheonix 5.0 Polarization camera (LUCID Vision Labs Inc., 2023) that is built around Sony’s IMX250MYR CMOS.</p>
+<p>This section summarizes the steps required to setup the environment needed to run a GigE Vision (i.e., genicam) camera on a Raspberry Pi 5. Here we use a Pheonix 5.0 Polarization camera (LUCID Vision Labs Inc., 2023) that is built around Sony’s IMX250MYR/IMX264MYR CMOS.</p>
 <dl>
 <dt>Hardware Requirements</dt><dd><ol class="arabic simple">
 <li><dl class="simple">
@@ -125,7 +126,7 @@
 </dl>
 </li>
 <li><dl class="simple">
-<dt>Rasberry Pi 4b running Debian GNU/Linux 12 (bookworm) x64. Prefer remote connection with Raspberry Pi Connect.</dt><dd><ol class="loweralpha simple">
+<dt>Rasberry Pi 5 running Debian GNU/Linux 12 (trixie) x64. Prefer remote connection with Raspberry Pi Connect.</dt><dd><ol class="loweralpha simple">
 <li><p>Power supply.</p></li>
 </ol>
 </dd>
@@ -134,7 +135,7 @@
 <li><p>Ethernet Cable.</p></li>
 </ol>
 </dd>
-<dt>Install ArenaSDK Software (ArenaSDK_v0.1.78_Linux_ARM64)</dt><dd><div class="admonition note">
+<dt>Install ArenaSDK Software (ArenaSDK_v#.#.#_Linux_ARM64)</dt><dd><div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Full details in ‘README_ARM64.txt’</p>
 </div>
@@ -239,20 +240,20 @@
 <span class="gp">$ </span>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/default/gpsd
 </pre></div>
 </div>
-<p>Replace ‘DEVICES=”″’ with ‘DEVICES=”/dev/serial0″’</p>
+<p>Replace ‘DEVICES=””’ with ‘DEVICES=”/dev/serial0”’</p>
 </dd>
 </dl>
 </li>
 </ol>
 </dd>
-<dt>Run GPS service when collecting data</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">gpspipe -r -d -l -o /home/pi/`date +”%Y%m%d-%H-%M-%S”`.nmea</span>
+<dt>Run GPS service when collecting data</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">gpspipe -r -d -l -o /home/pi/`date +&quot;%Y%m%d-%H-%M-%S&quot;`.nmea</span>
 </pre></div>
 </div>
 </dd>
 </dl>
 </section>
-<section id="example-of-running-and-plottind-data">
-<h2>Example of running and plottind data<a class="headerlink" href="#example-of-running-and-plottind-data" title="Link to this heading"></a></h2>
+<section id="example-of-running-and-plotting-data">
+<h2>Example of running and plotting data<a class="headerlink" href="#example-of-running-and-plotting-data" title="Link to this heading"></a></h2>
 <blockquote>
 <div><ol class="loweralpha" start="2">
 <li><dl>
@@ -264,8 +265,8 @@
 </li>
 <li><dl>
 <dt>Run sample python script.</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>python3
-<span class="gp">$ </span>import<span class="w"> </span>test_sample
-<span class="gp">$ </span>test_sample.run<span class="o">()</span>
+<span class="go">&gt;&gt;&gt; import test_sample</span>
+<span class="go">&gt;&gt;&gt; test_sample.run()</span>
 </pre></div>
 </div>
 </dd>
@@ -274,9 +275,9 @@
 <li><dl>
 <dt>Demosaic and plot test data</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>polanalyser
 <span class="gp">$ </span>python3
-<span class="gp">$ </span>import<span class="w"> </span>test_plot
-<span class="gp">$ </span>test_plot.demosaic_test<span class="o">()</span>
-<span class="gp">$ </span>test_plot.standard_test<span class="o">()</span>
+<span class="go">&gt;&gt;&gt; import test_plot</span>
+<span class="go">&gt;&gt;&gt; test_plot.demosaic_test()</span>
+<span class="go">&gt;&gt;&gt; test_plot.standard_test()</span>
 </pre></div>
 </div>
 </dd>
@@ -409,7 +410,11 @@
 </dl>
 </dd></dl>
 
-<p>..autofunction:: nc_write.append</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="nc_write.append">
+<span class="sig-prename descclassname"><span class="pre">nc_write.</span></span><span class="sig-name descname"><span class="pre">append</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#nc_write.append" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 </section>
 <section id="perform-dark-calibration-measurements">
 <h2>Perform dark calibration measurements<a class="headerlink" href="#perform-dark-calibration-measurements" title="Link to this heading"></a></h2>
