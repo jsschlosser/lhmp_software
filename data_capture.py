@@ -12,7 +12,7 @@ from zoneinfo import ZoneInfo
 import data_file_save
 genfile = data_file_save.gen_file
 adddata = data_file_save.append_data
-def Run(camera_settings):
+def run(camera_settings):
     """
     Function for capturing samples with the LHMP.
 
