@@ -1,7 +1,7 @@
 import data_capture
 import cv2
 import numpy as np 
-def Run():
+def run():
 	"""
 	Function for inputting camera settings and acquiring images from the LHMP. Writes output level 0 data to netCDF file for processing.	
 
