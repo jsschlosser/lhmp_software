@@ -6,7 +6,7 @@ from pylab import rcParams
 import os
 import sys
 
-def DarkCurrent(pathto_raw_dark_cal_data=None):
+def dark_current(pathto_raw_dark_cal_data=None):
 	"""
 	Takes LHMP dark measurements (in DN) and plots them against temparature. Requires numpy, matplotlib, and pylab.
 

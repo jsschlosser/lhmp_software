@@ -59,6 +59,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#perform-dark-calibration-measurements">Perform dark calibration measurements</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#visualize-dark-calibration-measurements">Visualize dark calibration measurements</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dark_cal_data_processing.dark_current"><code class="docutils literal notranslate"><span class="pre">dark_current()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#dark_cal_data_processing.dark_read"><code class="docutils literal notranslate"><span class="pre">dark_read()</span></code></a></li>
 </ul>
 </li>
@@ -379,6 +380,17 @@
 </section>
 <section id="visualize-dark-calibration-measurements">
 <h2>Visualize dark calibration measurements<a class="headerlink" href="#visualize-dark-calibration-measurements" title="Link to this heading"></a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="dark_cal_data_processing.dark_current">
+<span class="sig-prename descclassname"><span class="pre">dark_cal_data_processing.</span></span><span class="sig-name descname"><span class="pre">dark_current</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pathto_raw_dark_cal_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dark_cal_data_processing.dark_current" title="Link to this definition"></a></dt>
+<dd><p>Takes LHMP dark measurements (in DN) and plots them against temparature. Requires numpy, matplotlib, and pylab.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pathto_raw_dark_cal_data</strong> (<em>string</em>) – Path to dark calibration dataset.</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="dark_cal_data_processing.dark_read">
 <span class="sig-prename descclassname"><span class="pre">dark_cal_data_processing.</span></span><span class="sig-name descname"><span class="pre">dark_read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pathto_raw_dark_cal_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dark_cal_data_processing.dark_read" title="Link to this definition"></a></dt>

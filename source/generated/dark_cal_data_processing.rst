@@ -8,6 +8,6 @@
 
    .. autosummary::
    
-      DarkCurrent
+      dark_current
       dark_read
    
