@@ -17,5 +17,3 @@ Contents
 
    usage
    api
-   requirements
-
