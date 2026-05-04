@@ -126,8 +126,8 @@ Run GPS service when collecting data
 		
 		gpspipe -r -d -l -o /home/pi/`date +”%Y%m%d-%H-%M-%S”`.nmea
 
-Example of running programs in Arena api
------------------------------------------
+Example of running and plottind data
+------------------------------------
 
 	b) Set appropriate directory with python scripts.
 		.. code-block:: console
@@ -143,7 +143,7 @@ Example of running programs in Arena api
 
 	d) Demosaic and plot test data 
 		.. code-block:: console
-
+			$ pip install polanalyser
 			$ python3
 			>>> import TestPlot
 			>>> TestPlot.demosaic_test()
