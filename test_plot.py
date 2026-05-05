@@ -6,17 +6,22 @@ import cv2
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 import matplotlib.colors as mcolors
+from datetime import date
+
 def demosaic_test():
 	"""
 	Function for demosaicing and visualizing DoLP, AoLP, intensity, and the Stoke's vector components.
   
 	"""  
-	desired_data_date = input("Enter the date of the desired test data in iso format (YYYY-MM-DD):")
+	desired_data_date = input("Enter the date of the desired test data in iso format (YYYY-MM-DD) or leave blank to default to today's date: ")
+	if desired_data_date =="":
+		desired_data_date = date.today().isoformat()
+
 	file_suffix = input("Enter filename suffix or leave empty to default to test: ")
 	if file_suffix=="":
-		pathto_raw_data_file = f'../BayerRG8_{desired_data_date}_test.nc'
+		pathto_raw_data_file = f'../Level_0_Data/BayerRG8_{desired_data_date}_test.nc'
 	else:
-		pathto_raw_data_file = f'../BayerRG8_{desired_data_date}_{file_suffix}.nc'
+		pathto_raw_data_file = f'../Level_0_Data/BayerRG8_{desired_data_date}_{file_suffix}.nc'
 
 	data = Dataset(pathto_raw_data_file,'r')
 	data_dictionary = {}		 
@@ -26,6 +31,7 @@ def demosaic_test():
 		data_dictionary[key] = vals#np.where(vals == '--', np.nan, vals)
 	image_data = data_dictionary['Raw_Signal']
 	dataset_length = len(image_data[:,0,0])
+	print(dataset_length)
 	h_pixel_length = len(image_data[0,:,0])
 	v_pixel_length = len(image_data[0,0,:])
 	angles = np.deg2rad([0, 45, 90, 135])
@@ -57,38 +63,38 @@ def demosaic_test():
 
 		norm_s0 = mcolors.Normalize(vmin=np.min(s0), vmax=np.max(s0))
 		s0_vis = (norm_s0(s0)*255).astype('uint8')
-		total_intensity_png_name = f'../LeveL_1_data/S0_total_{i1}.tiff'
+		total_intensity_png_name = f'../test_images/S0_total_{i1}.tiff'
 		cv2.imwrite(total_intensity_png_name, s0_vis)
 
 		norm_q = mcolors.Normalize(vmin=np.min(q), vmax=np.max(q))
 		q_vis = (norm_q(q)*255).astype('uint8')
-		q_png_name = f'../LeveL_1_data/q_total_{i1}.tiff'
+		q_png_name = f'../test_images/q_total_{i1}.tiff'
 		cv2.imwrite(q_png_name, q_vis)
 
 		norm_u = mcolors.Normalize(vmin=np.min(u), vmax=np.max(u))
 		u_vis = (norm_u(u)*255).astype('uint8')
-		u_png_name = f'../LeveL_1_data/u_total_{i1}.tiff'
+		u_png_name = f'../test_images/u_total_{i1}.tiff'
 		cv2.imwrite(u_png_name, u_vis)
 
 		norm_dolp = mcolors.Normalize(vmin=np.min(img_dolp_total), vmax=np.max(img_dolp_total))
 		img_dolp_vis = (norm_dolp(img_dolp_total)*255).astype('uint8')
-		DOLP_png_name = f'../LeveL_1_data/DOLP_total_{i1}.tiff'
+		DOLP_png_name = f'../test_images/DOLP_total_{i1}.tiff'
 		cv2.imwrite(DOLP_png_name, img_dolp_vis)
 
 		norm_aolp = mcolors.Normalize(vmin=np.min(img_aolp_total), vmax=np.max(img_aolp_total))
 		img_aolp_vis = (norm_aolp(img_aolp_total)*255).astype('uint8')
-		AOLP_png_name = f'../LeveL_1_data/AOLP_total_{i1}.tiff'
+		AOLP_png_name = f'../test_images/AOLP_total_{i1}.tiff'
 		cv2.imwrite(AOLP_png_name, img_aolp_vis)
 
 		
-		DOLP_png_name = f'../LeveL_1_data/DOLP_color_{i1}.tiff'
-		AOLP_png_name = f'../LeveL_1_data/AOLP_color_{i1}.tiff'
+		DOLP_png_name = f'../test_images/DOLP_color_{i1}.tiff'
+		AOLP_png_name = f'../test_imags/AOLP_color_{i1}.tiff'
 		img_dolp_vis = (img_dolp_bgr * 255).astype('uint8')
 		img_aolp_vis =(img_aolp_bgr * 255).astype('uint8')
 		cv2.imwrite(DOLP_png_name, img_dolp_vis)
 		cv2.imwrite(AOLP_png_name, img_aolp_vis)
 		for i2 in [0,1,2]:
-			intensity_png_name = f'../LeveL_1_data/S{i2}_color_{i1}.tiff'
+			intensity_png_name = f'../test_images/S{i2}_color_{i1}.tiff'
 			stks = img_stokes_bgr[:,:,:,i2]
 			norm_stokes = mcolors.Normalize(vmin=np.min(stks), vmax=np.max(stks))
 			img_stokes_vis = (norm_stokes(stks)*255).astype('uint8')
@@ -99,9 +105,20 @@ def standard_test():
 	Function for visualizing standard polarizer DoLP and AoLP.
   
 	""" 
+	desired_data_date = input("Enter the date of the desired test data in iso format (YYYY-MM-DD) or leave blank to default to today's date: ")
+	if desired_data_date =="":
+		desired_data_date = date.today().isoformat()
 
-	pathto_raw_data_file = '../PolarizedDolp_BayerRG8_test.nc'
-	data = Dataset(pathto_raw_data_file,'r')
+	file_suffix = input("Enter filename suffix or leave empty to default to test: ")
+	if file_suffix=="":
+		pathto_dolp_data_file = f'../Level_0_Data/PolarizedDolp_BayerRG8_{desired_data_date}_test.nc'
+		pathto_aolp_data_file = f'../Level_0_Data/PolarizedAolp_BayerRG8_{desired_data_date}_test.nc'
+	else:
+		pathto_dolp_data_file = f'../Level_0_Data/PolarizedDolp_BayerRG8_{desired_data_date}_{file_suffix}.nc'
+		pathto_aolp_data_file = f'../Level_0_Data/PolarizedAolp_BayerRG8_{desired_data_date}_{file_suffix}.nc'
+
+	#pathto_raw_data_file = '../Level_0_Data/PolarizedDolp_BayerRG8_test.nc'
+	data = Dataset(pathto_dolp_data_file,'r')
 	data_dictionary = {}		 
 	for key in data.variables.keys():
 		vals = data.variables[key][:]
@@ -109,11 +126,12 @@ def standard_test():
 		data_dictionary[key] = vals#np.where(vals == '--', np.nan, vals)
 	image_data = data_dictionary['Raw_Signal']
 	dataset_length = len(image_data[:,0,0])
+	print(dataset_length)
 	h_pixel_length = len(image_data[0,:,0])
 	v_pixel_length = len(image_data[0,0,:])
 	angles = np.deg2rad([0, 45, 90, 135])
 	for i1 in range(0,dataset_length):
-		DOLP_png_name = f'../LeveL_1_data/DOLP_standard_{i1}.tiff'
+		DOLP_png_name = f'../test_images/DOLP_standard_{i1}.tiff'
 		dolp_mono = np.squeeze(image_data[i1,:,:])
 		norm_dolp = mcolors.Normalize(vmin=np.min(dolp_mono), vmax=np.max(dolp_mono))
 		img_dolp_vis = (norm_dolp(dolp_mono)*255).astype('uint8')
@@ -121,8 +139,8 @@ def standard_test():
 		#img_dolp_vis = pa.applyColorToDoP(dolp_mono) 
 		cv2.imwrite(DOLP_png_name, img_dolp_vis)
 
-	pathto_raw_data_file = '../PolarizedAolp_BayerRG8_test.nc'
-	data = Dataset(pathto_raw_data_file,'r')
+	#pathto_raw_data_file = '../Level_0_Data/PolarizedAolp_BayerRG8_test.nc'
+	data = Dataset(pathto_aolp_data_file,'r')
 	data_dictionary = {}		 
 	for key in data.variables.keys():
 		vals = data.variables[key][:]
@@ -134,7 +152,7 @@ def standard_test():
 	v_pixel_length = len(image_data[0,0,:])
 	angles = np.deg2rad([0, 45, 90, 135])
 	for i1 in range(0,dataset_length):
-		AOLP_png_name = f'../LeveL_1_data/AOLP_standard_{i1}.tiff'
+		AOLP_png_name = f'../test_images/AOLP_standard_{i1}.tiff'
 		aolp_mono = np.squeeze(image_data[i1,:,:])
 		norm_aolp = mcolors.Normalize(vmin=np.min(aolp_mono), vmax=np.max(aolp_mono))
 		img_aolp_vis = (norm_aolp(aolp_mono)*255).astype('uint8')

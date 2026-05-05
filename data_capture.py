@@ -66,7 +66,7 @@ def run(camera_settings):
         i_count = 0
         output_dictionary = {}
         timedif = time.time() - start_time
-        while timedif < camera_settings['acquisition_duration']: # Continuously fetch and process images
+        while timedif <= camera_settings['acquisition_duration']: # Continuously fetch and process images
             timedif = time.time() - start_time
             with device.start_stream():
                 RXdata = ser.read(1)#一个一个读
@@ -110,15 +110,16 @@ def run(camera_settings):
                     genfile(output_dictionary,camera_settings['output_filename'])
                     image_data_list = [] 
                     image_info_list = [] 
-                elif timedif==camera_settings['acquisition_duration']-1:
+                elif i_count-1 == camera_settings['save_rate']:
                     adddata(output_dictionary,camera_settings['output_filename'])
                     image_data_list = [] 
                     image_info_list = [] 
-                elif i_count-1 % camera_settings['save_rate'] == 0:
+                    i_count == 0
+                elif timedif==camera_settings['acquisition_duration']:
                     adddata(output_dictionary,camera_settings['output_filename'])
                     image_data_list = [] 
-                    image_info_list = [] 
-                i_count +=1
+                    image_info_list = []
+                i_count += 1                         
                 device.requeue_buffer(image_buffer)    
 
     #output_dictionary['image_orientation_list'] = np.array(IMUdata)
