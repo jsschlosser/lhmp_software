@@ -1,13 +1,15 @@
 import data_capture
 import cv2
 import numpy as np 
+from datetime import date
+
 def dark_current():
 	"""
 	Function for capturing a set of dark current measurements by running this on starup with the instrument with the lense cap on.
 
 	
 	"""  
-
+	formatted_date = date.today().isoformat()
 	camera_settings = {}
 	camera_settings['acquisition_duration'] = 600
 	camera_settings['GainAuto'] = 'Off' #'Continuous' #'Off'
@@ -17,7 +19,7 @@ def dark_current():
 	camera_settings['sleep_time'] = 0.25
 	camera_settings['PixelFormat'] = 'BayerRG8'
 	print(f"Camera Settings: {camera_settings}")
-	camera_settings['output_filename'] = f'Dark_Current.nc'
+	camera_settings['output_filename'] = f'dark_current_cal_data_{formatted_date}.nc'
 	output_dictionary = data_capture.run(camera_settings)
 
 
@@ -26,7 +28,7 @@ def dark_read():
 	Function for capturing a set of dark read measurements by varying expsure time after running the dark_current routine. 
 	
 	"""  
-
+	formatted_date = date.today().isoformat()
 	output_dictionary = {}   
 	output_dictionary['image_data_list'] = None
 	output_dictionary['image_info_list'] = None
@@ -40,6 +42,6 @@ def dark_read():
 	for i1 in np.logspace(np.log10(10000),np.log10(150000),25):
 		camera_settings['ExposureTimeSetting'] = int(i1)#5147373
 		#print(f"Camera Settings: {camera_settings}")
-		camera_settings['output_filename'] = f'DarkRead_ExpTime-{int(i1/1000)}ms.nc'
+		camera_settings['output_filename'] = f'dark_read_cal_data_{int(i1/1000)}ms_{formatted_date}.nc'
 		OP_dict = data_capture.run(camera_settings)
 

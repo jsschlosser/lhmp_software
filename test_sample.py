@@ -18,8 +18,12 @@ def run():
 	camera_settings['save_rate'] = 30 # seconds
 	pxl_format_list = ['BayerRG8','PolarizedDolp_BayerRG8','PolarizedAolp_BayerRG8']
 	formatted_date = date.today().isoformat()
+	file_suffix = input("Enter filename suffix or leave empty to default to test: ")
 	for pxl_frmt in pxl_format_list:
 		camera_settings['PixelFormat'] = pxl_frmt
 		print(f"Camera Settings: {camera_settings}")
-		camera_settings['output_filename'] = f'{camera_settings["PixelFormat"]}_{formatted_date}_test.nc'
+		if file_suffix==[]:
+			camera_settings['output_filename'] = f'{camera_settings["PixelFormat"]}_{formatted_date}_test.nc'
+		else:
+			camera_settings['output_filename'] = f'{camera_settings["PixelFormat"]}_{formatted_date}_{file_suffix}.nc'
 		data_capture.run(camera_settings)
