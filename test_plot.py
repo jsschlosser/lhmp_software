@@ -13,7 +13,7 @@ def demosaic_test():
 	"""  
 	desired_data_date = input("Enter the date of the desired test data in iso format (YYYY-MM-DD):")
 	file_suffix = input("Enter filename suffix or leave empty to default to test: ")
-	if file_suffix==[]:
+	if file_suffix=="":
 		pathto_raw_data_file = f'../BayerRG8_{desired_data_date}_test.nc'
 	else:
 		pathto_raw_data_file = f'../BayerRG8_{desired_data_date}_{file_suffix}.nc'

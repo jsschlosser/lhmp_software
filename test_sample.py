@@ -22,7 +22,7 @@ def run():
 	for pxl_frmt in pxl_format_list:
 		camera_settings['PixelFormat'] = pxl_frmt
 		print(f"Camera Settings: {camera_settings}")
-		if file_suffix==[]:
+		if file_suffix=="":
 			camera_settings['output_filename'] = f'{camera_settings["PixelFormat"]}_{formatted_date}_test.nc'
 		else:
 			camera_settings['output_filename'] = f'{camera_settings["PixelFormat"]}_{formatted_date}_{file_suffix}.nc'
