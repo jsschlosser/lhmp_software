@@ -1,13 +1,7 @@
 {
-    "api": 0.029,
-    "generated/IMU_read": 0.012,
-    "generated/dark_cal_data_collection": 0.01,
-    "generated/dark_cal_data_processing": 0.01,
-    "generated/data_capture": 0.007,
-    "generated/data_file_save": 0.012,
-    "generated/nc_write": 0.009,
+    "generated/dark_cal_data_collection": 0.03,
+    "generated/dark_cal_data_processing": 0.011,
     "generated/test_plot": 0.01,
-    "generated/test_sample": 0.007,
-    "index": 0.006,
+    "generated/test_sample": 0.005,
     "usage": 0.159
 }
