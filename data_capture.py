@@ -115,7 +115,7 @@ def run(camera_settings):
                     image_data_list = [] 
                     image_info_list = [] 
                     i_count == 0
-                if timedif==camera_settings['acquisition_duration']:
+                if timedif==camera_settings['acquisition_duration']-1:
                     adddata(output_dictionary,camera_settings['output_filename'])
                     image_data_list = [] 
                     image_info_list = []
