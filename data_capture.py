@@ -73,7 +73,7 @@ def run(camera_settings):
                 RXdata = int(RXdata.hex(),16) #转成16进制显示
                 IMU_read.DueData(RXdata)
                 IMUdata = np.hstack((IMU_read.Angle,IMU_read.baro))
-                print(IMUdata)
+                #print(IMUdata)
                 image_buffer = device.get_buffer()  # Optional args         
 
                 """
@@ -110,12 +110,12 @@ def run(camera_settings):
                     genfile(output_dictionary,camera_settings['output_filename'])
                     image_data_list = [] 
                     image_info_list = [] 
-                elif i_count-1 == camera_settings['save_rate']:
+                if i_count-1 == camera_settings['save_rate']:
                     adddata(output_dictionary,camera_settings['output_filename'])
                     image_data_list = [] 
                     image_info_list = [] 
                     i_count == 0
-                elif timedif==camera_settings['acquisition_duration']:
+                if timedif==camera_settings['acquisition_duration']:
                     adddata(output_dictionary,camera_settings['output_filename'])
                     image_data_list = [] 
                     image_info_list = []

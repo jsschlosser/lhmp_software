@@ -11,7 +11,7 @@ def dark_current():
 	"""  
 	formatted_date = date.today().isoformat()
 	camera_settings = {}
-	camera_settings['acquisition_duration'] = 600
+	camera_settings['acquisition_duration'] = 60
 	camera_settings['GainAuto'] = 'Off' #'Continuous' #'Off'
 	camera_settings['ExposureAuto'] = 'Off'#'Off'
 	camera_settings['GainSetting'] = 0
