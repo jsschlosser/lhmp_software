@@ -82,3 +82,4 @@ def append(path, data):
                 ds.variables[key][current_len:,:] = values
             elif len(data[key].shape)==3:   
                 ds.variables[key][current_len:,:,:] = values
+        print(ds)
