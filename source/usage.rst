@@ -157,6 +157,7 @@ This section shows the steps required to collect test data from the LHMP replica
 
 c) Demosaic and plot test data:
 	.. code-block:: console
+
 		$ pip install polanalyser
 		$ python3
 		>>> import test_plot
