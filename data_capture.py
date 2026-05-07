@@ -110,11 +110,11 @@ def run(camera_settings):
                     genfile(output_dictionary,camera_settings['output_filename'])
                     image_data_list = [] 
                     image_info_list = [] 
-                if i_count-1 == camera_settings['save_rate']:
+                if i_count == camera_settings['save_rate']:
                     adddata(output_dictionary,camera_settings['output_filename'])
                     image_data_list = [] 
                     image_info_list = [] 
-                    i_count == 0
+                    i_count = 0
                 i_count += 1                         
                 device.requeue_buffer(image_buffer)    
         adddata(output_dictionary,camera_settings['output_filename'])

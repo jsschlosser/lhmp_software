@@ -124,7 +124,7 @@ Install GPS support
 Run GPS service when collecting data
 	.. code-block:: console
 		
-		gpspipe -r -d -l -o /home/pi/`date +"%Y%m%d-%H-%M-%S"`.nmea
+		gpspipe -r -d -l -o ~/GPS_Data/`date +"%Y%m%d-%H-%M-%S"`.nmea
 
 Example of running and plotting data
 ------------------------------------
