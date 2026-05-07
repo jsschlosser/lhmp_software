@@ -20,7 +20,7 @@ def dark_current():
 	camera_settings['PixelFormat'] = 'BayerRG8'
 	camera_settings['save_rate'] = 30 # seconds
 	print(f"Camera Settings: {camera_settings}")
-	camera_settings['output_filename'] = f'/lhmp_data/dark_current_cal_data_{formatted_date}.nc'
+	camera_settings['output_filename'] = f'../lhmp_data/dark_current_cal_data_{formatted_date}.nc'
 	output_dictionary = data_capture.run(camera_settings)
 
 
@@ -44,6 +44,6 @@ def dark_read():
 	for i1 in np.logspace(np.log10(10000),np.log10(150000),25):
 		camera_settings['ExposureTimeSetting'] = int(i1)#5147373
 		#print(f"Camera Settings: {camera_settings}")
-		camera_settings['output_filename'] = f'/lhmp_data/dark_read_cal_data_{int(i1/1000)}ms_{formatted_date}.nc'
+		camera_settings['output_filename'] = f'../lhmp_data/dark_read_cal_data_{int(i1/1000)}ms_{formatted_date}.nc'
 		OP_dict = data_capture.run(camera_settings)
 
