@@ -1,7 +1,3 @@
 {
-    "generated/dark_cal_data_collection": 0.03,
-    "generated/dark_cal_data_processing": 0.011,
-    "generated/test_plot": 0.01,
-    "generated/test_sample": 0.005,
-    "usage": 0.159
+    "usage": 0.186
 }

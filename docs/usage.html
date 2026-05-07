@@ -115,26 +115,40 @@
 </section>
 <section id="configuring-the-raspberry-pi">
 <h2>Configuring the Raspberry Pi<a class="headerlink" href="#configuring-the-raspberry-pi" title="Link to this heading"></a></h2>
-<p>This section summarizes the steps required to setup the environment needed to run a GigE Vision (i.e., genicam) camera on a Raspberry Pi 5. Here we use a Pheonix 5.0 Polarization camera (LUCID Vision Labs Inc., 2023) that is built around Sony’s IMX250MYR/IMX264MYR CMOS.</p>
+<p>This section summarizes the steps required to setup the environment needed to start collecting data with a Pheonix 5.0 Polarization camera (LUCID Vision Labs Inc., 2023) and a Raspberry Pi 5.</p>
 <dl>
-<dt>Hardware Requirements</dt><dd><ol class="arabic simple">
-<li><dl class="simple">
-<dt>Any GigE vision camera should work however it must be a GenICam compliant machine vision camera/device.</dt><dd><ol class="loweralpha simple">
-<li><p>Power supply.</p></li>
+<dt>Hardware Requirements</dt><dd><dl>
+<dt>-A GigE vision polarization camera</dt><dd><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Any should work however it must be a GenICam compliant machine vision camera/device</p>
+</div>
+<ol class="loweralpha simple">
+<li><p>12V Power supply</p></li>
+<li><p>Ethernet cable</p></li>
+</ol>
+</dd>
+<dt>-Rasberry Pi 5 running Debian (trixie) x64</dt><dd><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Prefer remote connection with Raspberry Pi Connect</p>
+</div>
+<ol class="loweralpha simple">
+<li><p>3.3V Power supply or 12V-3.3V RPi HAT</p></li>
+</ol>
+</dd>
+<dt>-Yahboom IMU 10-Axis (CMP-10A)</dt><dd><ol class="loweralpha simple">
+<li><p>USB-C to USB-A cable</p></li>
+</ol>
+</dd>
+<dt>-Yahboom GPS (ATGM336H-5N)</dt><dd><ol class="loweralpha simple">
+<li><p>4 GPIO wires for I2C connection</p></li>
+<li><p>External attena</p></li>
 </ol>
 </dd>
 </dl>
-</li>
-<li><dl class="simple">
-<dt>Rasberry Pi 5 running Debian GNU/Linux 12 (trixie) x64. Prefer remote connection with Raspberry Pi Connect.</dt><dd><ol class="loweralpha simple">
-<li><p>Power supply.</p></li>
-</ol>
 </dd>
 </dl>
-</li>
-<li><p>Ethernet Cable.</p></li>
-</ol>
-</dd>
+<ol class="arabic">
+<li><dl>
 <dt>Install ArenaSDK Software (ArenaSDK_v#.#.#_Linux_ARM64)</dt><dd><div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Full details in ‘README_ARM64.txt’</p>
@@ -157,13 +171,13 @@
 </div></blockquote>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>replace #.#.# with current version.</p>
+<p>Replace #.#.# with current version</p>
 </div>
 </dd>
 </dl>
 </li>
 <li><dl>
-<dt>Run the ArenaSDK_Linux_ARM64.conf file</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>~/Documents/ArenaSDK_Linux_ARM64
+<dt>Run the ArenaSDK_Linux_ARM64.conf file:</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>~/Documents/ArenaSDK_Linux_ARM64
 <span class="gp">$ </span>sudo<span class="w"> </span>sh<span class="w"> </span>Arena_SDK_ARM64.conf
 </pre></div>
 </div>
@@ -173,35 +187,42 @@
 </ol>
 </dd>
 </dl>
-<p>Install HDF5 and netCDF4</p>
+</li>
+<li><dl>
+<dt>Install HDF5 and netCDF4</dt><dd><p>a) Install both HDF5 and netCDF4 repositories to handle data storage:
+.. code-block:: console</p>
 <blockquote>
-<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>libnetcdf-dev<span class="w"> </span>libhdf5-dev
-<span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>netCDF4
-</pre></div>
-</div>
+<div><p>$ sudo apt install libnetcdf-dev libhdf5-dev
+$ pip install netCDF4</p>
 </div></blockquote>
-<p>Set Camera IP address and set IPv Settings</p>
-<blockquote>
-<div><p>Select Advanced Options under the ‘Wirelss LAN’ dropdown menu.</p>
-<p>Navigate to ‘IPv6 Settings’ tab and set the ‘Method’ to ‘Disabled’</p>
-<p>Navigate to ‘IPv4 Settings’ tab and set the ‘Method’ to ‘Manual’</p>
-<p>While in ‘IPv4 Settings’, add the following IP address to the ‘Address’ list: 169.254.4.205 with a ‘Netmask’ of 16.</p>
-</div></blockquote>
-<dl>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>Set Camera IP address and set IPv Settings</dt><dd><ol class="loweralpha simple">
+<li><p>Select Advanced Options under the ‘Wirelss LAN’ dropdown menu.</p></li>
+<li><p>Navigate to ‘IPv6 Settings’ tab and set the ‘Method’ to ‘Disabled’</p></li>
+<li><p>Navigate to ‘IPv4 Settings’ tab and set the ‘Method’ to ‘Manual’</p></li>
+<li><p>While in ‘IPv4 Settings’, add the following IP address to the ‘Address’ list: 169.254.4.205 with a ‘Netmask’ of 16</p></li>
+</ol>
+</dd>
+</dl>
+</li>
+<li><dl>
 <dt>Install arena api</dt><dd><div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Full details in ‘~/arena_api-#.#.#-py3-none-any/README.txt’. Replace #.#.# with current version.</p>
 </div>
 <ol class="loweralpha">
 <li><dl>
-<dt>Install standard openCV.</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>opencv-python
+<dt>Install standard openCV:</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>opencv-python
 </pre></div>
 </div>
 </dd>
 </dl>
 </li>
 <li><dl>
-<dt>Install arena api.</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>~/Documents/arena_api-#.#.#-py3-none-any
+<dt>Install arena api:</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>~/Documents/arena_api-#.#.#-py3-none-any
 <span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>arena_api-#.#.#-py3-none-any.whl
 <span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>examples/requirements_lin_arm64.txt
 <span class="gp">$ </span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>python3-tk
@@ -212,31 +233,38 @@
 </li>
 </ol>
 </dd>
+</dl>
+</li>
+<li><dl>
 <dt>Install GPS support</dt><dd><div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Full details at ‘<a class="reference external" href="https://ozzmaker.com/berrygps-setup-guide-raspberry-pi/">https://ozzmaker.com/berrygps-setup-guide-raspberry-pi/</a>’</p>
 </div>
 <ol class="loweralpha">
 <li><dl>
-<dt>Disable the serial console and enable the serial port.</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>raspi-config
+<dt>Disable the serial console and enable the serial port:</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>raspi-config
 </pre></div>
 </div>
-<p>Select “5. Inteferface options”.</p>
-<p>Select “No” to disable the serial console.</p>
-<p>Select “Yes” to enable the serial port.</p>
+<ol class="lowerroman simple">
+<li><p>Select “5. Inteferface options”</p></li>
+<li><p>Select “No” to disable the serial console</p></li>
+<li><p>Select “Yes” to enable the serial port</p></li>
+</ol>
+</dd>
+</dl>
+</li>
+</ol>
+<ol class="loweralpha" start="5">
+<li><dl>
+<dt>Point RPi5 to the correct UART interface ‘/dev/serial0’:</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>nano<span class="w"> </span>/boot/firmware/config.txt
+</pre></div>
+</div>
+<p>Add ‘dtparam=uart0_console’ to end of file, save, and exit</p>
 </dd>
 </dl>
 </li>
 <li><dl>
-<dt>Point RPi5 to the correct UART interface ‘/dev/serial0’.</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>nano<span class="w"> </span>/boot/firmware/config.txt
-</pre></div>
-</div>
-<p>Add ‘dtparam=uart0_console’ to end of file, save, and exit.</p>
-</dd>
-</dl>
-</li>
-<li><dl>
-<dt>Install GPSD services.</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>gpsd-clients<span class="w"> </span>gpsd<span class="w"> </span>-y
+<dt>Install GPSD services:</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>gpsd-clients<span class="w"> </span>gpsd<span class="w"> </span>-y
 <span class="gp">$ </span>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/default/gpsd
 </pre></div>
 </div>
@@ -245,26 +273,29 @@
 </dl>
 </li>
 </ol>
-</dd>
-<dt>Run GPS service when collecting data</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">gpspipe -r -d -l -o /home/pi/`date +&quot;%Y%m%d-%H-%M-%S&quot;`.nmea</span>
-</pre></div>
-</div>
+<p>g) After install, collect GPS data using:
+.. code-block:: console</p>
+<blockquote>
+<div><p>$ gpspipe -r -d -l -o ~/GPS_Data/<cite>date +”%Y%m%d-%H-%M-%S”</cite>.nmea</p>
+</div></blockquote>
 </dd>
 </dl>
+</li>
+</ol>
 </section>
 <section id="example-of-running-and-plotting-data">
 <h2>Example of running and plotting data<a class="headerlink" href="#example-of-running-and-plotting-data" title="Link to this heading"></a></h2>
-<blockquote>
-<div><ol class="loweralpha" start="2">
+<p>This section shows the steps required to collect test data from the LHMP replica and ensure instrument functionality.</p>
+<ol class="arabic">
 <li><dl>
-<dt>Set appropriate directory with python scripts.</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>~/Documents
+<dt>Set appropriate directory with python scripts:</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span><span class="nb">cd</span><span class="w"> </span>~/Documents
 </pre></div>
 </div>
 </dd>
 </dl>
 </li>
 <li><dl>
-<dt>Run sample python script.</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>python3
+<dt>Run sample python script:</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>python3
 <span class="go">&gt;&gt;&gt; import test_sample</span>
 <span class="go">&gt;&gt;&gt; test_sample.run()</span>
 </pre></div>
@@ -272,8 +303,10 @@
 </dd>
 </dl>
 </li>
+</ol>
+<ol class="loweralpha" start="3">
 <li><dl>
-<dt>Demosaic and plot test data</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>polanalyser
+<dt>Demosaic and plot test data:</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>polanalyser
 <span class="gp">$ </span>python3
 <span class="go">&gt;&gt;&gt; import test_plot</span>
 <span class="go">&gt;&gt;&gt; test_plot.demosaic_test()</span>
@@ -284,43 +317,42 @@
 </dl>
 </li>
 </ol>
-</div></blockquote>
 </section>
 <section id="instructions-for-building-sphinx-documentation-locally">
 <h2>Instructions for building sphinx documentation locally<a class="headerlink" href="#instructions-for-building-sphinx-documentation-locally" title="Link to this heading"></a></h2>
-<p>This section describes how to build the sphinx documentation locally.</p>
+<p>This section describes how to build sphinx documentation locally. This is only required for the software updating workflow but is not required for strictly opperational LHMP replicas.</p>
 <blockquote>
-<div><ol class="loweralpha" start="2">
+<div><ol class="loweralpha">
 <li><dl>
-<dt>Install matplotlib.</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>matplotlib
+<dt>Install matplotlib:</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>matplotlib
 </pre></div>
 </div>
 </dd>
 </dl>
 </li>
 <li><dl>
-<dt>Install basic sphinx package.</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>sphinx
+<dt>Install basic sphinx package:</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>sphinx
 </pre></div>
 </div>
 </dd>
 </dl>
 </li>
 <li><dl>
-<dt>Install html theme for sphinx.</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>sphinx_rtd_theme
+<dt>Install html theme for sphinx:</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>sphinx_rtd_theme
 </pre></div>
 </div>
 </dd>
 </dl>
 </li>
 <li><dl>
-<dt>Install pdf builder for sphinx.</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>sphinx-simplepdf
+<dt>Install pdf builder for sphinx:</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>sphinx-simplepdf
 </pre></div>
 </div>
 </dd>
 </dl>
 </li>
 <li><dl>
-<dt>Build sphinx.</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sphinx-build<span class="w"> </span>-b<span class="w"> </span>html<span class="w"> </span><span class="nb">source</span><span class="w"> </span>docs
+<dt>Build sphinx:</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sphinx-build<span class="w"> </span>-b<span class="w"> </span>html<span class="w"> </span><span class="nb">source</span><span class="w"> </span>docs
 </pre></div>
 </div>
 </dd>
