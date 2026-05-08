@@ -39,13 +39,11 @@ Hardware Requirements
 	-Yahboom GPS (ATGM336H-5N)
 		a) 4 GPIO wires for I2C connection 
 		b) External attena  
-	
-	
 
 1) Install ArenaSDK Software (ArenaSDK_v#.#.#_Linux_ARM64)
 	.. note::
 
-		Full details in 'README_ARM64.txt'
+		Full details in 'README_ARM64.txt'. Replace #.#.# with current version. 
 
 
 	a) Set jumbo frames
@@ -53,22 +51,16 @@ Hardware Requirements
 
 			$ sudo ip link set eth0 mtu 9000
 
-	e) Extract the tarball to your desired location:	
+	b) Extract the tarball to your desired location:	
 		.. code-block:: console
 
 	   		$ tar -xvzf ArenaSDK_v#.#.#_Linux_ARM64.tar.gz
 	    
-	    .. note::
-
-	   		Replace #.#.# with current version
-
-
-	f) Run the ArenaSDK_Linux_ARM64.conf file:	
+	c) Run the ArenaSDK_Linux_ARM64.conf file:	
 		.. code-block:: console
 
 	   		$ cd ~/Documents/ArenaSDK_Linux_ARM64
 	   		$ sudo sh Arena_SDK_ARM64.conf
-
 
 2) Install HDF5 and netCDF4
 	a) Install both HDF5 and netCDF4 repositories to handle data storage:
