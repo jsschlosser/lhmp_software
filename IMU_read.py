@@ -68,7 +68,7 @@ def DueData(inputdata):  # New core procedures, read the data partition, each re
         CheckSum += inputdata #The checksum calculation includes the checksum bit.
         RxBuff[buf_length-data_length] = inputdata #Save Data
         data_length = data_length - 1 #Length Minus One
-        if data_length == 0: Received complete data
+        if data_length == 0: #Received complete data
             CheckSum = (CheckSum-inputdata) & 0xff 
             start = 0 #Clear to Zero
             GetDataDeal(RxBuff)  #Processing Data
