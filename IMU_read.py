@@ -16,7 +16,7 @@ ACCData = [0.0]*8
 GYROData = [0.0]*8
 AngleData = [0.0]*8
 BaroData = [0.0]*8
-FrameState = 0  # What is the state of the judgment
+FrameState = 0  # What is the state of the frame
 CheckSum = 0  # Sum check bit   
 start = 0 #帧头开始的标志
 data_length = 0 #根据协议的文档长度为11 eg:55 51 31 FF 53 02 CD 07 12 0A 1B   
@@ -139,6 +139,6 @@ def get_baro(datahex):
     h1 = datahex[5]
     h2 = datahex[6]
     h3 = datahex[7]   
-    baro_pressure=(p3<<24)|(p2<<16)|(p1<<8)|p0     
-    baro_alt = (h3<<24)|(h2<<16)|(h1<<8)|h0
+    baro_pressure =(p3<<24|p2<<16|p1<<8|p0)    
+    baro_alt = (h3<<24|h2<<16|h1<<8|h0)
     return baro_pressure, baro_alt

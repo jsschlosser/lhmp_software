@@ -63,11 +63,11 @@ Hardware Requirements
 	   		$ sudo sh Arena_SDK_ARM64.conf
 
 2) Install HDF5 and netCDF4
-	a) Install both HDF5 and netCDF4 repositories to handle data storage:
-	.. code-block:: console
+	Install both HDF5 and netCDF4 repositories to handle data storage:
+		.. code-block:: console
 
-		$ sudo apt install libnetcdf-dev libhdf5-dev
-		$ pip install netCDF4
+			$ sudo apt install libnetcdf-dev libhdf5-dev
+			$ pip install netCDF4
 
 
 3) Set Camera IP address and set IPv Settings
@@ -125,9 +125,20 @@ Hardware Requirements
 		Replace 'DEVICES=""' with 'DEVICES="/dev/serial0"'
 
 	g) After install, collect GPS data using:
+		.. code-block:: console
+		
+			$ gpspipe -r -d -l -o ~/GPS_Data/`date +"%Y%m%d-%H-%M-%S"`.nmea
+
+
+	h) Install .nmea decoder.
+		.. code-block:: console
+
+			$ python3 -m pip install --upgrade pynmeagps
+			
+5) Install IMU support
 	.. code-block:: console
 		
-		$ gpspipe -r -d -l -o ~/GPS_Data/`date +"%Y%m%d-%H-%M-%S"`.nmea
+		$ python -m pip install pyserial
 
 
 Example of running and plotting data
@@ -192,7 +203,7 @@ Test the instrument functionality
 .. autofunction:: test_sample.run
 
 
-.. autofunction:: data_capture.run
+.. autofunction:: test_sample.run
 
 
 .. autofunction:: data_file_save.gen_file
@@ -212,6 +223,9 @@ Test the instrument functionality
 
 .. autofunction:: nc_write.append
 
+
+.. automodule:: IMU_read
+	:members:
 
 Perform dark calibration measurements
 -------------------------------------
