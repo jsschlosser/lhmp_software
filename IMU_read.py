@@ -18,8 +18,8 @@ AngleData = [0.0]*8
 BaroData = [0.0]*8
 FrameState = 0  # What is the state of the frame
 CheckSum = 0  # Sum check bit   
-start = 0 #帧头开始的标志
-data_length = 0 #根据协议的文档长度为11 eg:55 51 31 FF 53 02 CD 07 12 0A 1B   
+start = 0 #frame header start marker
+data_length = 0 #According to the protocol, the data length is 11 eg:55 51 31 FF 53 02 CD 07 12 0A 1B   
 acc = [0.0]*3
 gyro = [0.0]*3
 Angle = [0.0]*3 
@@ -27,24 +27,24 @@ baro = [0.0]*2
 
 def GetDataDeal(list_buf):
     global acc,gyro,Angle,baro
-    if(list_buf[buf_length - 1] != CheckSum): #校验码不正确
+    if(list_buf[buf_length - 1] != CheckSum): #Incorrect verification code.
         return
         
-    if(list_buf[1] == 0x51): #加速度输出
+    if(list_buf[1] == 0x51): #Acceleration Output
         for i in range(6): 
-            ACCData[i] = list_buf[2+i] #有效数据赋值
+            ACCData[i] = list_buf[2+i] #Valid Data Assignment
         acc = get_acc(ACCData)  
-    elif(list_buf[1] == 0x52): #角速度输出
+    elif(list_buf[1] == 0x52): #Angular Velocity Output
         for i in range(6): 
-            GYROData[i] = list_buf[2+i] #有效数据赋值
+            GYROData[i] = list_buf[2+i] #Valid Data Assignment
         gyro = get_gyro(GYROData)   
-    elif(list_buf[1] == 0x53): #姿态角度输出
+    elif(list_buf[1] == 0x53): #Attitude Angle Output
         for i in range(6): 
-            AngleData[i] = list_buf[2+i] #有效数据赋值
+            AngleData[i] = list_buf[2+i] #Valid Data Assignment
         Angle = get_angle(AngleData) 
-    elif(list_buf[1] == 0x56): #姿态角度输出
+    elif(list_buf[1] == 0x56): #Baro data output
         for i in range(8): 
-            BaroData[i] = list_buf[2+i] #有效数据赋值
+            BaroData[i] = list_buf[2+i] #Valid Data Assignment
         baro = get_angle(BaroData) 
        
     #print("acc:%10.3f %10.3f %10.3f \n" % (acc[0],acc[1],acc[2]))
@@ -65,13 +65,13 @@ def DueData(inputdata):  # New core procedures, read the data partition, each re
         for i in range(11):
             RxBuff[i] = 0   
     if start == 1:
-        CheckSum += inputdata #校验码计算 会把校验位加上
-        RxBuff[buf_length-data_length] = inputdata #保存数据
-        data_length = data_length - 1 #长度减一
-        if data_length == 0: #接收到完整的数据
+        CheckSum += inputdata #The checksum calculation includes the checksum bit.
+        RxBuff[buf_length-data_length] = inputdata #Save Data
+        data_length = data_length - 1 #Length Minus One
+        if data_length == 0: Received complete data
             CheckSum = (CheckSum-inputdata) & 0xff 
-            start = 0 #清0
-            GetDataDeal(RxBuff)  #处理数据
+            start = 0 #Clear to Zero
+            GetDataDeal(RxBuff)  #Processing Data
             
 def get_acc(datahex):
     axl = datahex[0]
@@ -140,5 +140,6 @@ def get_baro(datahex):
     h2 = datahex[6]
     h3 = datahex[7]   
     baro_pressure =(p3<<24|p2<<16|p1<<8|p0)    
+    print(baro_pressure)
     baro_alt = (h3<<24|h2<<16|h1<<8|h0)
     return baro_pressure, baro_alt
