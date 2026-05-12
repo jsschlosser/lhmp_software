@@ -69,8 +69,8 @@ def run(camera_settings):
         while timedif <= camera_settings['acquisition_duration']: # Continuously fetch and process images
             timedif = time.time() - start_time
             with device.start_stream():
-                RXdata = ser.read(1)#一个一个读
-                RXdata = int(RXdata.hex(),16) #转成16进制显示
+                RXdata = ser.read(1)#Read serial bitwise.
+                RXdata = int(RXdata.hex(),16) #Convert to hexadecimal for display
                 IMU_read.DueData(RXdata)
                 IMUdata = np.hstack((IMU_read.Angle,IMU_read.baro))
                 #print(IMUdata)

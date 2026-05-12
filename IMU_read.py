@@ -46,10 +46,10 @@ def GetDataDeal(list_buf):
         for i in range(8): 
             BaroData[i] = list_buf[2+i] #Valid Data Assignment
         baro = get_angle(BaroData) 
-       
-    #print("acc:%10.3f %10.3f %10.3f \n" % (acc[0],acc[1],acc[2]))
-    #print("gyro:%10.3f %10.3f %10.3f \n" % (gyro[0],gyro[1],gyro[2]))
-    #print("angle:%10.3f %10.3f %10.3f \n" % (Angle[0],Angle[1],Angle[2]))   
+    print(list_buf[1])
+    print("acc:%10.3f %10.3f %10.3f \n" % (acc[0],acc[1],acc[2]))
+    print("gyro:%10.3f %10.3f %10.3f \n" % (gyro[0],gyro[1],gyro[2]))
+    print("angle:%10.3f %10.3f %10.3f \n" % (Angle[0],Angle[1],Angle[2]))   
     
     
 def DueData(inputdata):  # New core procedures, read the data partition, each read to the corresponding array 
@@ -140,6 +140,5 @@ def get_baro(datahex):
     h2 = datahex[6]
     h3 = datahex[7]   
     baro_pressure =(p3<<24|p2<<16|p1<<8|p0)    
-    print(baro_pressure)
     baro_alt = (h3<<24|h2<<16|h1<<8|h0)
     return baro_pressure, baro_alt
