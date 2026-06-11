@@ -9,6 +9,7 @@ import datetime
 import board
 import adafruit_icm20x
 i2c = board.I2C()
+icm = adafruit_icm20x.ICM20948(i2c)
 import attitude_calculation
 orientation = attitude_calculation.orientation
 from zoneinfo import ZoneInfo
@@ -78,9 +79,9 @@ def run(camera_settings):
                 dt = time.time()-time_step
                 time_step = time.time()
             with device.start_stream():
-                acc = i2c.acceleration
-                gyr = i2c.gyro
-                mag = i2c.magnetic
+                acc = icm.acceleration
+                gyr = icm.gyro
+                mag = icm.magnetic
                 yaw, pitch, roll, q_current = orientation(q_current, gyr, acc, mag, dt)
                 IMU_data = np.array([yaw, pitch, roll])
                 image_buffer = device.get_buffer()  # Optional args         
