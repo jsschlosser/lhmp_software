@@ -143,7 +143,7 @@ Hardware Requirements
 6) Install IMU support
 	.. note::
 
-		Full details at 'https://docs.circuitpython.org/projects/icm20x/en/latest/api.html#'
+		Full details at 'https://docs.circuitpython.org/projects/icm20x/en/latest/'
 
 	a) pip3 install adafruit-circuitpython-icm20x --break-system-packages
 
