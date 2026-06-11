@@ -6,8 +6,11 @@ import cv2
 import numpy as np 
 import time
 import datetime
-import IMU_read
-ser = IMU_read.ser
+import board
+import adafruit_icm20x
+i2c = board.I2C()
+import attitude_calculation
+orientation = attitude_calculation.orientation
 from zoneinfo import ZoneInfo
 import data_file_save
 genfile = data_file_save.gen_file
@@ -64,17 +67,22 @@ def run(camera_settings):
         #print(f"Starting image acquisition for {camera_settings['acquisition_duration']} seconds...")
 
         i_count = 0
+        i_trk = 0
         output_dictionary = {}
         timedif = time.time() - start_time
+        time_step = time.time()
+        q_current = np.array([1.0, 0.0, 0.0, 0.0])
         while timedif <= camera_settings['acquisition_duration']: # Continuously fetch and process images
-            timedif = time.time() - start_time
+            timedif = time.time() - start_time 
+            if timedif>0:
+                dt = time.time()-time_step
+                time_step = time.time()
             with device.start_stream():
-                RXdata = ser.read(1)#Read serial bitwise.
-                RXdata = int(RXdata.hex(),16) #Convert to hexadecimal for display
-                print(RXdata)
-                IMU_read.DueData(RXdata)
-                IMUdata = np.hstack((IMU_read.Angle,IMU_read.baro))
-                print(IMUdata)
+                acc = i2c.acceleration
+                gyr = i2c.gyro
+                mag = i2c.magnetic
+                yaw, pitch, roll, q_current = orientation(q_current, gyr, acc, mag, dt)
+                IMU_data = np.array([yaw, pitch, roll])
                 image_buffer = device.get_buffer()  # Optional args         
 
                 """
