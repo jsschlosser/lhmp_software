@@ -10,7 +10,7 @@ ser = serial.Serial(port, baud, timeout=0.5)
 
 print("IMU serial is opened:", ser.is_open)
     
-buf_length = 11 
+buf_length = 11
 RxBuff = [0]*buf_length 
 ACCData = [0.0]*8
 GYROData = [0.0]*8
@@ -31,26 +31,30 @@ def GetDataDeal(list_buf):
         return
         
     if(list_buf[1] == 0x51): #Acceleration Output
+        #print(list_buf)
         for i in range(6): 
             ACCData[i] = list_buf[2+i] #Valid Data Assignment
         acc = get_acc(ACCData)  
     elif(list_buf[1] == 0x52): #Angular Velocity Output
+        #print(list_buf)
         for i in range(6): 
             GYROData[i] = list_buf[2+i] #Valid Data Assignment
         gyro = get_gyro(GYROData)   
     elif(list_buf[1] == 0x53): #Attitude Angle Output
+        #print(list_buf)
         for i in range(6): 
             AngleData[i] = list_buf[2+i] #Valid Data Assignment
         Angle = get_angle(AngleData) 
     elif(list_buf[1] == 0x56): #Baro data output
+        print(list_buf)
         for i in range(8): 
             BaroData[i] = list_buf[2+i] #Valid Data Assignment
-        baro = get_angle(BaroData) 
-    print(list_buf[1])
+        baro = get_baro(BaroData) 
+    #print(list_buf[1])
     print("acc:%10.3f %10.3f %10.3f \n" % (acc[0],acc[1],acc[2]))
     print("gyro:%10.3f %10.3f %10.3f \n" % (gyro[0],gyro[1],gyro[2]))
     print("angle:%10.3f %10.3f %10.3f \n" % (Angle[0],Angle[1],Angle[2]))   
-    
+    print("pressure:%10.3f alt: %10.3f \n" % (baro[0],baro[1]))
     
 def DueData(inputdata):  # New core procedures, read the data partition, each read to the corresponding array 
     global start

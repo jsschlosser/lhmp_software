@@ -51,7 +51,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#instructions-for-building-sphinx-documentation-locally">Instructions for building sphinx documentation locally</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#test-the-instrument-functionality">Test the instrument functionality</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#test_sample.run"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#data_capture.run"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#data_file_save.gen_file"><code class="docutils literal notranslate"><span class="pre">gen_file()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#data_file_save.append_data"><code class="docutils literal notranslate"><span class="pre">append_data()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#test_plot.standard_test"><code class="docutils literal notranslate"><span class="pre">standard_test()</span></code></a></li>
@@ -151,7 +151,7 @@
 <li><dl>
 <dt>Install ArenaSDK Software (ArenaSDK_v#.#.#_Linux_ARM64)</dt><dd><div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Full details in ‘README_ARM64.txt’</p>
+<p>Full details in ‘README_ARM64.txt’. Replace #.#.# with current version.</p>
 </div>
 <ol class="loweralpha">
 <li><dl>
@@ -161,17 +161,9 @@
 </dd>
 </dl>
 </li>
-</ol>
-<ol class="loweralpha" start="5">
 <li><dl>
-<dt>Extract the tarball to your desired location:</dt><dd><blockquote>
-<div><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>tar<span class="w"> </span>-xvzf<span class="w"> </span>ArenaSDK_v#.#.#_Linux_ARM64.tar.gz
+<dt>Extract the tarball to your desired location:</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>tar<span class="w"> </span>-xvzf<span class="w"> </span>ArenaSDK_v#.#.#_Linux_ARM64.tar.gz
 </pre></div>
-</div>
-</div></blockquote>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Replace #.#.# with current version</p>
 </div>
 </dd>
 </dl>
@@ -189,12 +181,13 @@
 </dl>
 </li>
 <li><dl>
-<dt>Install HDF5 and netCDF4</dt><dd><p>a) Install both HDF5 and netCDF4 repositories to handle data storage:
-.. code-block:: console</p>
-<blockquote>
-<div><p>$ sudo apt install libnetcdf-dev libhdf5-dev
-$ pip install netCDF4</p>
-</div></blockquote>
+<dt>Install HDF5 and netCDF4</dt><dd><dl>
+<dt>Install both HDF5 and netCDF4 repositories to handle data storage:</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>libnetcdf-dev<span class="w"> </span>libhdf5-dev
+<span class="gp">$ </span>pip<span class="w"> </span>install<span class="w"> </span>netCDF4
+</pre></div>
+</div>
+</dd>
+</dl>
 </dd>
 </dl>
 </li>
@@ -256,7 +249,7 @@ $ pip install netCDF4</p>
 </ol>
 <ol class="loweralpha" start="5">
 <li><dl>
-<dt>Point RPi5 to the correct UART interface ‘/dev/serial0’:</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>nano<span class="w"> </span>/boot/firmware/config.txt
+<dt>Point RPi5 to the correct UART interface:</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>nano<span class="w"> </span>/boot/firmware/config.txt
 </pre></div>
 </div>
 <p>Add ‘dtparam=uart0_console’ to end of file, save, and exit</p>
@@ -265,19 +258,45 @@ $ pip install netCDF4</p>
 </li>
 <li><dl>
 <dt>Install GPSD services:</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>gpsd-clients<span class="w"> </span>gpsd<span class="w"> </span>-y
-<span class="gp">$ </span>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/default/gpsd
 </pre></div>
 </div>
-<p>Replace ‘DEVICES=””’ with ‘DEVICES=”/dev/serial0”’</p>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt>Point gpsd to correct device: ‘/dev/ttyUSB0’</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>sudo<span class="w"> </span>nano<span class="w"> </span>/etc/default/gpsd
+</pre></div>
+</div>
+<p>Replace ‘DEVICES=””’ with ‘DEVICES=”/dev/ttyUSB0”’</p>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt>After install, collect GPS data using:</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>gpspipe<span class="w"> </span>-r<span class="w"> </span>-d<span class="w"> </span>-l<span class="w"> </span>-o<span class="w"> </span>~/GPS_Data/<span class="sb">`</span>date<span class="w"> </span>+<span class="s2">&quot;%Y%m%d-%H-%M-%S&quot;</span><span class="sb">`</span>.nmea
+</pre></div>
+</div>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt>Install .nmea decoder.</dt><dd><div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>python3<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pynmeagps
+</pre></div>
+</div>
 </dd>
 </dl>
 </li>
 </ol>
-<p>g) After install, collect GPS data using:
-.. code-block:: console</p>
-<blockquote>
-<div><p>$ gpspipe -r -d -l -o ~/GPS_Data/<cite>date +”%Y%m%d-%H-%M-%S”</cite>.nmea</p>
-</div></blockquote>
+</dd>
+</dl>
+</li>
+<li><dl>
+<dt>Install IMU support</dt><dd><div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Full details at ‘<a class="reference external" href="https://docs.circuitpython.org/projects/icm20x/en/latest/api">https://docs.circuitpython.org/projects/icm20x/en/latest/api</a>.html#’</p>
+</div>
+<ol class="loweralpha simple">
+<li><p>pip3 install adafruit-circuitpython-icm20x –break-system-packages</p></li>
+</ol>
 </dd>
 </dl>
 </li>
@@ -370,20 +389,9 @@ $ pip install netCDF4</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="data_capture.run">
-<span class="sig-prename descclassname"><span class="pre">data_capture.</span></span><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">camera_settings</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#data_capture.run" title="Link to this definition"></a></dt>
-<dd><p>Function for capturing samples with the LHMP.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>camera_settings</strong> (<em>numpy dictionary</em>) – dictionary containing the gain and exposure time camera settings as well as the acquisition duration</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>dictionary of raw image data in digital number along with the image metadata of exposure time (us), gain, acquisition time (UTC), sensor temperature (degC)</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>numpy dictionary</p>
-</dd>
-</dl>
+<dt class="sig sig-object py" id="id0">
+<span class="sig-prename descclassname"><span class="pre">test_sample.</span></span><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd><p>Function for inputting camera settings and acquiring images from the LHMP. Writes output level 0 data to netCDF file for processing.</p>
 </dd></dl>
 
 <dl class="py function">
@@ -449,7 +457,7 @@ $ pip install netCDF4</p>
 
 </section>
 <section id="perform-dark-calibration-measurements">
-<h2>Perform dark calibration measurements<a class="headerlink" href="#perform-dark-calibration-measurements" title="Link to this heading"></a></h2>
+<span id="module-IMU_read"></span><h2>Perform dark calibration measurements<a class="headerlink" href="#perform-dark-calibration-measurements" title="Link to this heading"></a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="dark_cal_data_collection.dark_current">
 <span class="sig-prename descclassname"><span class="pre">dark_cal_data_collection.</span></span><span class="sig-name descname"><span class="pre">dark_current</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#dark_cal_data_collection.dark_current" title="Link to this definition"></a></dt>

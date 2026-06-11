@@ -39,13 +39,11 @@ Hardware Requirements
 	-Yahboom GPS (ATGM336H-5N)
 		a) 4 GPIO wires for I2C connection 
 		b) External attena  
-	
-	
 
 1) Install ArenaSDK Software (ArenaSDK_v#.#.#_Linux_ARM64)
 	.. note::
 
-		Full details in 'README_ARM64.txt'
+		Full details in 'README_ARM64.txt'. Replace #.#.# with current version. 
 
 
 	a) Set jumbo frames
@@ -53,29 +51,23 @@ Hardware Requirements
 
 			$ sudo ip link set eth0 mtu 9000
 
-	e) Extract the tarball to your desired location:	
+	b) Extract the tarball to your desired location:	
 		.. code-block:: console
 
 	   		$ tar -xvzf ArenaSDK_v#.#.#_Linux_ARM64.tar.gz
 	    
-	    .. note::
-
-	   		Replace #.#.# with current version
-
-
-	f) Run the ArenaSDK_Linux_ARM64.conf file:	
+	c) Run the ArenaSDK_Linux_ARM64.conf file:	
 		.. code-block:: console
 
 	   		$ cd ~/Documents/ArenaSDK_Linux_ARM64
 	   		$ sudo sh Arena_SDK_ARM64.conf
 
-
 2) Install HDF5 and netCDF4
-	a) Install both HDF5 and netCDF4 repositories to handle data storage:
-	.. code-block:: console
+	Install both HDF5 and netCDF4 repositories to handle data storage:
+		.. code-block:: console
 
-		$ sudo apt install libnetcdf-dev libhdf5-dev
-		$ pip install netCDF4
+			$ sudo apt install libnetcdf-dev libhdf5-dev
+			$ pip install netCDF4
 
 
 3) Set Camera IP address and set IPv Settings
@@ -117,7 +109,7 @@ Hardware Requirements
 		ii) Select "No" to disable the serial console
 		iii) Select "Yes" to enable the serial port
 
-	e) Point RPi5 to the correct UART interface '/dev/serial0':
+	e) Point RPi5 to the correct UART interface:
 		.. code-block:: console
 
 			$ sudo nano /boot/firmware/config.txt
@@ -128,15 +120,32 @@ Hardware Requirements
 		.. code-block:: console
 
 			$ sudo apt-get install gpsd-clients gpsd -y
+
+	g) Point gpsd to correct device: '/dev/ttyUSB0'
+		.. code-block:: console
+
 			$ sudo nano /etc/default/gpsd
 
-		Replace 'DEVICES=""' with 'DEVICES="/dev/serial0"'
+		Replace 'DEVICES=""' with 'DEVICES="/dev/ttyUSB0"'
 
-	g) After install, collect GPS data using:
-	.. code-block:: console
+	h) After install, collect GPS data using:
+		.. code-block:: console
 		
-		$ gpspipe -r -d -l -o ~/GPS_Data/`date +"%Y%m%d-%H-%M-%S"`.nmea
+			$ gpspipe -r -d -l -o ~/GPS_Data/`date +"%Y%m%d-%H-%M-%S"`.nmea
 
+
+	i) Install .nmea decoder.
+		.. code-block:: console
+
+			$ python3 -m pip install --upgrade pynmeagps
+			
+
+6) Install IMU support
+	.. note::
+
+		Full details at 'https://docs.circuitpython.org/projects/icm20x/en/latest/api.html#'
+
+	a) pip3 install adafruit-circuitpython-icm20x --break-system-packages
 
 Example of running and plotting data
 ------------------------------------
@@ -200,7 +209,7 @@ Test the instrument functionality
 .. autofunction:: test_sample.run
 
 
-.. autofunction:: data_capture.run
+.. autofunction:: test_sample.run
 
 
 .. autofunction:: data_file_save.gen_file
@@ -220,6 +229,9 @@ Test the instrument functionality
 
 .. autofunction:: nc_write.append
 
+
+.. automodule:: IMU_read
+	:members:
 
 Perform dark calibration measurements
 -------------------------------------

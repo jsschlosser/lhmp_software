@@ -71,9 +71,10 @@ def run(camera_settings):
             with device.start_stream():
                 RXdata = ser.read(1)#Read serial bitwise.
                 RXdata = int(RXdata.hex(),16) #Convert to hexadecimal for display
+                print(RXdata)
                 IMU_read.DueData(RXdata)
                 IMUdata = np.hstack((IMU_read.Angle,IMU_read.baro))
-                #print(IMUdata)
+                print(IMUdata)
                 image_buffer = device.get_buffer()  # Optional args         
 
                 """
