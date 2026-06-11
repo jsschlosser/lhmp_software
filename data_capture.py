@@ -83,7 +83,7 @@ def run(camera_settings):
                 gyr = icm.gyro
                 mag = icm.magnetic
                 yaw, pitch, roll, q_current = orientation(q_current, gyr, acc, mag, dt)
-                IMU_data = np.array([yaw, pitch, roll])
+                IMUdata = np.array([yaw, pitch, roll])
                 image_buffer = device.get_buffer()  # Optional args         
 
                 """
