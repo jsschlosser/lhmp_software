@@ -88,7 +88,7 @@ def demosaic_test():
 
 		
 		DOLP_png_name = f'../test_images/DOLP_color_{i1}.tiff'
-		AOLP_png_name = f'../test_imags/AOLP_color_{i1}.tiff'
+		AOLP_png_name = f'../test_images/AOLP_color_{i1}.tiff'
 		img_dolp_vis = (img_dolp_bgr * 255).astype('uint8')
 		img_aolp_vis =(img_aolp_bgr * 255).astype('uint8')
 		cv2.imwrite(DOLP_png_name, img_dolp_vis)
