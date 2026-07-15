@@ -84,3 +84,6 @@ def orientation(q_prev, gyro, accel, mag, dt, kp=1.0):
 
     # Convert radians to degrees
     return math.degrees(yaw), math.degrees(pitch), math.degrees(roll), q_new
+    
+if __name__ == "__main__":
+    orientation()
