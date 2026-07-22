@@ -13,23 +13,9 @@ import NMEA_decode
 
 def run():
 	"""
-	Copies an existing NetCDF file to a new location, adds a new dimension 
-	and variable, and updates global attributes.
-
-	:param source_path: The absolute or relative path to the original .nc file.
-	:type source_path: str
-	:param target_path: The destination path where the modified .nc file will be saved.
-	:type target_path: str
-	:raises IOError: If the source file cannot be found or read.
-	:raises OSError: If there is a permissions issue or netCDF modification failure.
+	Copies an existing NetCDF file to a new location, processes polarization data
+	in memory-efficient chunks, and writes directly to disk to prevent OOM errors.
 	"""
-	#data = Dataset(pathto_raw_data_file,'r')
-	#data_dictionary = {}		 
-	#for key in data.variables.keys():
-	#	vals = data.variables[key][:]
-	#	print(key)
-	#	data_dictionary[key] = vals#np.where(vals == '--', np.nan, vals)	
-
 	desired_data_date = input("Enter the date of the desired raw data in iso format (YYYY-MM-DD) or leave blank to default to today's date: ")
 	if desired_data_date == "":
 		desired_data_date = date.today().isoformat()
@@ -40,8 +26,10 @@ def run():
 	else:
 		pathto_raw_data_file = f'../L0_data/BayerRG8_{desired_data_date}_{file_suffix}.nc'		
 		pathto_L1_data_file = f'../L1_data/BayerRG8_{desired_data_date}_{file_suffix}.nc'
+	
 	baselinedate = np.datetime64(f'{desired_data_date}T00:00:00', 's')	
-	shutil.copy(pathto_raw_data_file, pathto_L1_data_file)# 1. Copy the original file to the new destination ("Save As" workaround)
+	shutil.copy(pathto_raw_data_file, pathto_L1_data_file)
+	
 	gpsdate = desired_data_date.split("-")
 	gpsdate_combined = "".join(gpsdate)	
 	gpsfilename = [f for f in os.listdir(f'../gps_data/') if f.startswith(gpsdate_combined)]
@@ -51,91 +39,109 @@ def run():
 	gpslon = np.array(GPS_data['GGA']['lon'])
 	gpslat = np.array(GPS_data['GGA']['lat'])
 	gpsalt = np.array(GPS_data['GGA']['alt'])
-	with nc.Dataset(pathto_raw_data_file, 'a') as dataset:# 2. Open the newly copied file in append mode ('a') to modify it in place
-		image_data = dataset.variables['Raw_Signal'][:]
-		image_time = baselinedate + dataset.variables['time'][:].astype('timedelta64[s]')
-		dataset_length = len(image_time)
-		h_pixel_length = len(image_data[0,:,0])
-		v_pixel_length = len(image_data[0,0,:])
+
+	with nc.Dataset(pathto_L1_data_file, 'a') as dataset:
+		# Access variable references WITHOUT using [:] to avoid memory loading
+		raw_signal_var = dataset.variables['Raw_Signal']
+		time_var = dataset.variables['time']
+		
+		# Get dimensions dynamically from variable shapes
+		dataset_length = raw_signal_var.shape[0]
+		h_pixel_length = raw_signal_var.shape[1]
+		v_pixel_length = raw_signal_var.shape[2]
+		
 		angles = np.deg2rad([0, 45, 90, 135])
-		s0 = np.full((dataset_length, h_pixel_length, v_pixel_length, 3), np.nan)
-		s1 = np.full((dataset_length, h_pixel_length, v_pixel_length, 3), np.nan)
-		s2 = np.full((dataset_length, h_pixel_length, v_pixel_length, 3), np.nan)
-		gps_lon = np.full((dataset_length),np.nan)
-		gps_lat = np.full((dataset_length),np.nan)
-		gps_alt = np.full((dataset_length),np.nan)
-		pan = np.full((dataset_length),np.nan)
-		tilt = np.full((dataset_length),np.nan)
-		for i1 in range(0,dataset_length):
-			# Demosaic the raw image into four polarization channels (0, 45, 90, 135 degrees)
-			# The 'pa.COLOR_PolarRGB' option handles the combined RGGB-polarization filter array.
-			# The output is a set of 12 full-resolution images (R, G, B for each of the 4 angles).
-			img_000_bgr, img_045_bgr, img_090_bgr, img_135_bgr = pa.demosaicing(image_data[i1,:,:], pa.COLOR_PolarRGB) 	
-			# Calculate the Stokes vector per-pixel
-			image_list_bgr = [img_000_bgr, img_045_bgr, img_090_bgr, img_135_bgr]
-			image_list = np.sum(image_list_bgr,axis = 3)
-			img_stokes_bgr = pa.calcStokes(image_list_bgr, angles) 	
-			s0[i1,...] = np.squeeze(img_stokes_bgr[...,0])
-			s1[i1,...] = np.squeeze(img_stokes_bgr[...,1])
-			s2[i1,...] = np.squeeze(img_stokes_bgr[...,2])
-			gps_index = np.where((gpstime == image_time[i1]))[0]
-			gps_lon[i1] = np.mean(gpslon[gps_index])
-			gps_lat[i1] = np.mean(gpslat[gps_index])
-			gps_alt[i1] = np.mean(gpsalt[gps_index])
-			sun_pos = get_position(image_time[i1], gps_lon[i1], gps_lat[i1]) #Set position based on sun location
-			pan[i1] = np.degrees(sun_pos['azimuth'])
-			tilt[i1] = np.degrees(sun_pos['altitude']) 		
-			
-		s_bins = np.array(['time', 'H_pixel', 'V_pixel'])
+		new_dims = ('time', 'H_pixel', 'V_pixel')
 		colors = ['blue', 'green', 'red']
-		i_clr = 0
+		
+		# --- Step 1: Pre-create NetCDF variables on disk before processing ---
+		nc_vars = {}
 		for clr in colors:
-			I = dataset.createVariable(f'I_{clr}', 'f4', s_bins, zlib = True, complevel = 9)# createVariable(name, datatype, dimensions_tuple)			
-			I[:] = s0[...,i_clr]
-			I.short_name = 'total intensity'
-			I.units = 'DN'
-			I.long_name = f'{colors[i_clr]} light intensity signal in digital number (DN)'
-			I.ACVSNC_standard_name = f'Rad_Radiance_Remote_{colors[i_clr]}'   
-			Q = dataset.createVariable(f'Q_{clr}', 'f4', s_bins, zlib = True, complevel = 9)# createVariable(name, datatype, dimensions_tuple)			
-			Q[:] = s1[...,i_clr]
-			Q.short_name = 'horizontal-vertical intensity'
-			Q.units = 'DN'
-			Q.long_name = f'{colors[i_clr]} horizontal/vertical linear polarization'
-			Q.ACVSNC_standard_name = 'none' 
-			U = dataset.createVariable(f'U_{clr}', 'f4', s_bins, zlib = True, complevel = 9)# createVariable(name, datatype, dimensions_tuple)						
-			U[:] = s2[...,i_clr]
-			U.short_name = 'diagonal intensity'
-			U.units = 'DN'
-			U.long_name = f'{colors[i_clr]} +/-45 degree linear polarization'
-			U.ACVSNC_standard_name = 'none'
-			i_clr += 1
-		SA = dataset.createVariable('solar_azimuth', 'f4', s_bins, zlib = True, complevel = 9)# createVariable(name, datatype, dimensions_tuple)						
-		SA[:] = pan
-		SA.short_name = 'solar azimuth angle'
-		SA.units = 'degrees'
-		SA.long_name = 'Solar azimuth angle associated with sample position and time'
-		SA.ACVSNC_standard_name = 'none'
-		SA2 = dataset.createVariable('solar_altitude', 'f4', s_bins, zlib = True, complevel = 9)# createVariable(name, datatype, dimensions_tuple)						
-		SA2[:] = pan
-		SA2.short_name = 'solar altitude'
-		SA2.units = 'degrees'
-		SA2.long_name = 'Solar azimuth angle associated with sample position and time'
-		SA2.ACVSNC_standard_name = 'none'
-		lon = dataset.createVariable('GPS_longitude', 'f4', s_bins, zlib = True, complevel = 9)# createVariable(name, datatype, dimensions_tuple)						
-		lon[:] = gps_lon
-		lon.short_name = 'longitude'
-		lon.units = 'degrees'
-		lon.long_name = 'sample longitude derived from GPS in degrees W'
-		lon.ACVSNC_standard_name = 'none'
-		lat = dataset.createVariable('GPS_latitude', 'f4', s_bins, zlib = True, complevel = 9)# createVariable(name, datatype, dimensions_tuple)						
-		lat[:] = gps_lat
-		lat.short_name = 'latitude'
-		lat.units = 'degrees'
-		lat.long_name = 'sample latitude derived from GPS in degrees N'
-		lat.ACVSNC_standard_name = 'none'
-		alt = dataset.createVariable('GPS_altitude', 'f4', s_bins, zlib = True, complevel = 9)# createVariable(name, datatype, dimensions_tuple)						
-		alt[:] = gps_alt
-		alt.short_name = 'altitude'
-		alt.units = 'm'
-		alt.long_name = 'sample altitude in MASL'
-		alt.ACVSNC_standard_name = 'none'
+			for prefix, s_short, s_long in [
+				('I', 'total intensity', 'light intensity signal in digital number (DN)'),
+				('Q', 'horizontal-vertical intensity', 'I_(90)-I_(0) linear polarization'),
+				('U', 'diagonal intensity', 'I_(+45)-I_(-45) degree linear polarization')
+			]:
+				var_name = f'{prefix}_{clr}'
+				v = dataset.createVariable(var_name, 'f4', new_dims, zlib=True, complevel=9) # Lowered complevel to 5 for speed
+				v.short_name = s_short
+				v.units = 'DN'
+				v.long_name = f'{clr} {s_long}'
+				v.ACVSNC_standard_name = f'Rad_Radiance_Remote_{clr}' if prefix == 'I' else 'none'
+				nc_vars[var_name] = v
+
+		# Pre-create 1D tracking variables
+		meta_vars_config = {
+			'solar_azimuth': ('solar azimuth angle', 'degrees', 'Solar azimuth angle associated with sample position and time'),
+			'solar_altitude': ('solar altitude', 'degrees', 'Solar azimuth angle associated with sample position and time'), # Keeping original metadata long_name copy
+			'GPS_longitude': ('longitude', 'degrees', 'sample longitude derived from GPS in degrees W'),
+			'GPS_latitude': ('latitude', 'degrees', 'sample latitude derived from GPS in degrees N'),
+			'GPS_altitude': ('altitude', 'm', 'sample altitude in MASL')
+		}
+		
+		meta_vars = {}
+		for name, config in meta_vars_config.items():
+			v = dataset.createVariable(name, 'f4', 'time', zlib=True, complevel=9)
+			v.short_name = config[0]
+			v.units = config[1]
+			v.long_name = config[2]
+			v.ACVSNC_standard_name = 'none'
+			meta_vars[name] = v
+
+		# --- Step 2: Chunked processing loop (One time-step/chunk at a time) ---
+		# Adjust the step size if you want to process in small batches (e.g., step=10)
+		chunk_step = 30 
+		
+		for i1 in range(0, dataset_length, chunk_step):
+			end_idx = min(i1 + chunk_step, dataset_length)
+			
+			# Slice only the required time window into memory
+			image_data_chunk = raw_signal_var[i1:end_idx, :, :]
+			image_time_chunk = baselinedate + time_var[i1:end_idx].astype('timedelta64[s]')
+			
+			# Mini arrays to hold the chunk calculations transiently
+			actual_chunk_len = end_idx - i1
+			chunk_s0 = np.full((actual_chunk_len, h_pixel_length, v_pixel_length, 3), np.nan, dtype='f4')
+			chunk_s1 = np.full((actual_chunk_len, h_pixel_length, v_pixel_length, 3), np.nan, dtype='f4')
+			chunk_s2 = np.full((actual_chunk_len, h_pixel_length, v_pixel_length, 3), np.nan, dtype='f4')
+			
+			chunk_lon = np.full((actual_chunk_len), np.nan, dtype='f4')
+			chunk_lat = np.full((actual_chunk_len), np.nan, dtype='f4')
+			chunk_alt = np.full((actual_chunk_len), np.nan, dtype='f4')
+			chunk_pan = np.full((actual_chunk_len), np.nan, dtype='f4')
+			chunk_tilt = np.full((actual_chunk_len), np.nan, dtype='f4')
+
+			for idx, t_idx in enumerate(range(i1, end_idx)):
+				# Demosaic and calculate Stokes per index
+				img_000_bgr, img_045_bgr, img_090_bgr, img_135_bgr = pa.demosaicing(image_data_chunk[idx, :, :], pa.COLOR_PolarRGB) 	
+				img_stokes_bgr = pa.calcStokes([img_000_bgr, img_045_bgr, img_090_bgr, img_135_bgr], angles) 	
+				
+				chunk_s0[idx, ...] = np.squeeze(img_stokes_bgr[..., 0])
+				chunk_s1[idx, ...] = np.squeeze(img_stokes_bgr[..., 1])
+				chunk_s2[idx, ...] = np.squeeze(img_stokes_bgr[..., 2])
+				
+				# GPS & Sun Position calculations
+				gps_index = np.where((gpstime == image_time_chunk[idx]))[0]
+				if len(gps_index) > 0:
+					chunk_lon[idx] = np.mean(gpslon[gps_index])
+					chunk_lat[idx] = np.mean(gpslat[gps_index])
+					chunk_alt[idx] = np.mean(gpsalt[gps_index])
+				
+				sun_pos = get_position(image_time_chunk[idx], chunk_lon[idx], chunk_lat[idx])
+				chunk_pan[idx] = np.degrees(sun_pos['azimuth'])
+				chunk_tilt[idx] = np.degrees(sun_pos['altitude'])
+
+			# --- Step 3: Stream and write current computed chunk directly to disk ---
+			for i_clr, clr in enumerate(colors):
+				nc_vars[f'I_{clr}'][i1:end_idx, :, :] = chunk_s0[..., i_clr]
+				nc_vars[f'Q_{clr}'][i1:end_idx, :, :] = chunk_s1[..., i_clr]
+				nc_vars[f'U_{clr}'][i1:end_idx, :, :] = chunk_s2[..., i_clr]
+				
+			meta_vars['solar_azimuth'][i1:end_idx] = chunk_pan
+			meta_vars['solar_altitude'][i1:end_idx] = chunk_tilt
+			meta_vars['GPS_longitude'][i1:end_idx] = chunk_lon
+			meta_vars['GPS_latitude'][i1:end_idx] = chunk_lat
+			meta_vars['GPS_altitude'][i1:end_idx] = chunk_alt
+			
+			# Force disk synchronization and flush temporary RAM structures
+			dataset.sync()
