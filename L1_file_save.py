@@ -6,6 +6,7 @@ from datetime import date
 from datetime import time
 from datetime import datetime
 from zoneinfo import ZoneInfo
+from tqdm import tqdm
 from suncalc import get_position
 import polanalyser as pa
 import nc_write
@@ -75,14 +76,13 @@ def run():
 											('Q', 'horizontal-vertical intensity', 'I_(90)-I_(0) linear polarization'),
 											('U', 'diagonal intensity', 'I_(+45)-I_(-45) degree linear polarization')]:
 				var_name = f'{prefix}_{clr}'
-				v = dataset.createVariable(var_name, 'f4', new_dims, zlib=True, complevel=9) # Lowered complevel to 5 for speed
+				v = dataset.createVariable(var_name, 'f4', new_dims, zlib=True, complevel=5) # Lowered complevel to 5 for speed
 				v.short_name = s_short
 				v.units = 'DN'
 				v.long_name = f'{clr} {s_long}'
 				v.ACVSNC_standard_name = f'Rad_Radiance_Remote_{clr}' if prefix == 'I' else 'none'
 				nc_vars[var_name] = v
 
-		
 		meta_vars_config = {# Pre-create 1D tracking variables
 			'solar_azimuth': ('solar azimuth angle', 'degrees', 'Solar azimuth angle associated with sample location, altitude, and time'),
 			'solar_altitude': ('solar altitude', 'degrees', 'Solar altitude angle associated with sample location, altitude, and time'), # Keeping original metadata long_name copy
@@ -94,7 +94,11 @@ def run():
 		
 		meta_vars = {}
 		for name, config in meta_vars_config.items():
-			v = dataset.createVariable(name, 'f4', 'time', zlib=True, complevel=9)
+			if name.__contains__('view_'):
+				dims = new_dims
+			else:
+				dims = 'time'
+			v = dataset.createVariable(name, 'f4', dims, zlib=True, complevel=5)
 			v.short_name = config[0]
 			v.units = config[1]
 			v.long_name = config[2]
@@ -128,7 +132,7 @@ def run():
 			chunk_alt = np.full((actual_chunk_len), np.nan, dtype='f4')
 			chunk_pan = np.full((actual_chunk_len), np.nan, dtype='f4')
 			chunk_tilt = np.full((actual_chunk_len), np.nan, dtype='f4')
-			for i2, t_i2 in enumerate(range(i1, end_chunk)):
+			for i2, t_i2 in tqdm(enumerate(range(i1, end_chunk))):
 				# Demosaic and calculate Stokes per index
 				img_000_bgr, img_045_bgr, img_090_bgr, img_135_bgr = pa.demosaicing(image_data_chunk[i2, :, :], pa.COLOR_PolarRGB) 	
 				img_stokes_bgr = pa.calcStokes([img_000_bgr, img_045_bgr, img_090_bgr, img_135_bgr], angles) 	
@@ -158,8 +162,8 @@ def run():
 				
 			meta_vars['solar_azimuth'][i1:end_chunk] = chunk_pan
 			meta_vars['solar_altitude'][i1:end_chunk] = chunk_tilt
-			meta_vars['view_azimuth'][i1:end_chunk] = chunk_vaa
-			meta_vars['view_zenith'][i1:end_chunk] = chunk_vza			
+			meta_vars['view_azimuth'][i1:end_chunk, :, :] = chunk_vaa
+			meta_vars['view_zenith'][i1:end_chunk, :, :] = chunk_vza			
 			meta_vars['GPS_longitude'][i1:end_chunk] = chunk_lon
 			meta_vars['GPS_latitude'][i1:end_chunk] = chunk_lat
 			meta_vars['GPS_altitude'][i1:end_chunk] = chunk_alt
