@@ -15,7 +15,7 @@ objp = np.zeros((1, CHECKERBOARD[0] * CHECKERBOARD[1], 3), np.float32)
 objp[0, :, :2] = np.mgrid[0:CHECKERBOARD[0], 0:CHECKERBOARD[1]].T.reshape(-1, 2) * square_size
 
 # Load calibration images (replace path with your images)
-images = glob.glob('calibration_images/*.png')
+images = glob.glob('geometric_calibration_images/*.png')
 
 for fname in images:
     img = cv2.imread(fname)
