@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>test_sample &mdash; LHMP 1.0 documentation</title>
+  <title>L1_file_save &mdash; LHMP 1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
@@ -18,9 +18,7 @@
       <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="netcdf_to_grasp" href="netcdf_to_grasp.html" />
-    <link rel="prev" title="nc_write" href="nc_write.html" /> 
+    <link rel="search" title="Search" href="../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,23 +40,9 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <ul class="current">
+              <ul>
 <li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../api.html">API</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="attitude_calculation.html">attitude_calculation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dark_cal_data_collection.html">dark_cal_data_collection</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dark_cal_data_processing.html">dark_cal_data_processing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="look_vectors.html">look_vectors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_capture.html">data_capture</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_file_save.html">data_file_save</a></li>
-<li class="toctree-l2"><a class="reference internal" href="test_plot.html">test_plot</a></li>
-<li class="toctree-l2"><a class="reference internal" href="nc_write.html">nc_write</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">test_sample</a></li>
-<li class="toctree-l2"><a class="reference internal" href="netcdf_to_grasp.html">netcdf_to_grasp</a></li>
-<li class="toctree-l2"><a class="reference internal" href="view_geometry.html">view_geometry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="IMU_read.html">IMU_read</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="../api.html">API</a></li>
 </ul>
 
         </div>
@@ -75,10 +59,9 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../api.html">API</a></li>
-      <li class="breadcrumb-item active">test_sample</li>
+      <li class="breadcrumb-item active">L1_file_save</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/generated/test_sample.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/L1_file_save.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -86,13 +69,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-test_sample">
-<span id="test-sample"></span><h1>test_sample<a class="headerlink" href="#module-test_sample" title="Link to this heading"></a></h1>
+  <section id="module-L1_file_save">
+<span id="l1-file-save"></span><h1>L1_file_save<a class="headerlink" href="#module-L1_file_save" title="Link to this heading"></a></h1>
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="../usage.html#id0" title="test_sample.run"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code></a>()</p></td>
-<td><p>Function for inputting camera settings and acquiring images from the LHMP.</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code>()</p></td>
+<td><p>Copies an existing NetCDF file to a new location, processes polarization data in memory-efficient chunks, and writes directly to disk to prevent OOM errors.</p></td>
 </tr>
 </tbody>
 </table>
@@ -101,10 +84,7 @@
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="nc_write.html" class="btn btn-neutral float-left" title="nc_write" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="netcdf_to_grasp.html" class="btn btn-neutral float-right" title="netcdf_to_grasp" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 

@@ -4,12 +4,21 @@ API
 .. autosummary::
    :toctree: generated
 
-   IMU_read
-   dark_cal_data_collection
-   test_plot
-   data_capture
-   dark_cal_data_processing
-   test_sample
-   data_file_save
-   nc_write
+    attitude_calculation
+    L1_file_save
+    dark_cal_data_collection
+    dark_cal_data_processing
+    look_vectors
+    data_capture
+    data_file_save
+    test_plot
+    nc_write
+    test_sample
+    geometric_correction
+    netcdf_to_grasp
+    view_geometry
+    IMU_read
+    NMEA_decode
+
+
 

@@ -1,5 +1,4 @@
 {
-    "generated/data_capture": 0.026,
-    "generated/data_file_save": 0.013,
-    "usage": 0.176
+    "generated/L1_file_save": 0.028,
+    "generated/NMEA_decode": 0.009
 }

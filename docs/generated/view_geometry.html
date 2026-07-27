@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>test_plot &mdash; LHMP 1.0 documentation</title>
+  <title>view_geometry &mdash; LHMP 1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=9edc463e" />
 
@@ -19,8 +19,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="nc_write" href="nc_write.html" />
-    <link rel="prev" title="data_file_save" href="data_file_save.html" /> 
+    <link rel="next" title="IMU_read" href="IMU_read.html" />
+    <link rel="prev" title="netcdf_to_grasp" href="netcdf_to_grasp.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -51,11 +51,11 @@
 <li class="toctree-l2"><a class="reference internal" href="look_vectors.html">look_vectors</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data_capture.html">data_capture</a></li>
 <li class="toctree-l2"><a class="reference internal" href="data_file_save.html">data_file_save</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">test_plot</a></li>
+<li class="toctree-l2"><a class="reference internal" href="test_plot.html">test_plot</a></li>
 <li class="toctree-l2"><a class="reference internal" href="nc_write.html">nc_write</a></li>
 <li class="toctree-l2"><a class="reference internal" href="test_sample.html">test_sample</a></li>
 <li class="toctree-l2"><a class="reference internal" href="netcdf_to_grasp.html">netcdf_to_grasp</a></li>
-<li class="toctree-l2"><a class="reference internal" href="view_geometry.html">view_geometry</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">view_geometry</a></li>
 <li class="toctree-l2"><a class="reference internal" href="IMU_read.html">IMU_read</a></li>
 </ul>
 </li>
@@ -76,9 +76,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../api.html">API</a></li>
-      <li class="breadcrumb-item active">test_plot</li>
+      <li class="breadcrumb-item active">view_geometry</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/generated/test_plot.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/view_geometry.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -86,16 +86,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-test_plot">
-<span id="test-plot"></span><h1>test_plot<a class="headerlink" href="#module-test_plot" title="Link to this heading"></a></h1>
+  <section id="module-view_geometry">
+<span id="view-geometry"></span><h1>view_geometry<a class="headerlink" href="#module-view_geometry" title="Link to this heading"></a></h1>
 <p class="rubric">Functions</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="../usage.html#test_plot.demosaic_test" title="test_plot.demosaic_test"><code class="xref py py-obj docutils literal notranslate"><span class="pre">demosaic_test</span></code></a>()</p></td>
-<td><p>Function for demosaicing and visualizing DoLP, AoLP, intensity, and the Stoke's vector components.</p></td>
-</tr>
-<tr class="row-even"><td><p><a class="reference internal" href="../usage.html#test_plot.standard_test" title="test_plot.standard_test"><code class="xref py py-obj docutils literal notranslate"><span class="pre">standard_test</span></code></a>()</p></td>
-<td><p>Function for visualizing standard polarizer DoLP and AoLP.</p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">run</span></code>(roll_deg, pitch_deg, yaw_deg[, ...])</p></td>
+<td><p>Calculates View Zenith Angle (VZA) and View Azimuth Angle (VAA)  from system Roll, Pitch, and Yaw.</p></td>
 </tr>
 </tbody>
 </table>
@@ -105,8 +102,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="data_file_save.html" class="btn btn-neutral float-left" title="data_file_save" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="nc_write.html" class="btn btn-neutral float-right" title="nc_write" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="netcdf_to_grasp.html" class="btn btn-neutral float-left" title="netcdf_to_grasp" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="IMU_read.html" class="btn btn-neutral float-right" title="IMU_read" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

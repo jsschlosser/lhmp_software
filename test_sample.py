@@ -9,7 +9,7 @@ def run():
 
 	"""  
 	camera_settings = {}
-	camera_settings['acquisition_duration'] = 30 # seconds
+	camera_settings['acquisition_duration'] = 360 # seconds
 	camera_settings['GainAuto'] = 'Off' #'Continuous' 'Off'
 	camera_settings['ExposureAuto'] = 'Continuous'#'Continuous' 'Off'
 	camera_settings['GainSetting'] = 0
