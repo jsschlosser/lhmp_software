@@ -7,7 +7,9 @@ from datetime import time
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from tqdm import tqdm
-from suncalc import get_position
+from astropy.coordinates import get_sun
+import astropy.units as u
+from astropy.coordinates import AltAz, EarthLocation
 import polanalyser as pa
 import nc_write
 import NMEA_decode
