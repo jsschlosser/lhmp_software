@@ -10,6 +10,7 @@ from tqdm import tqdm
 from astropy.coordinates import get_sun
 import astropy.units as u
 from astropy.coordinates import AltAz, EarthLocation
+from astropy.time import Time
 import polanalyser as pa
 import nc_write
 import NMEA_decode
@@ -116,7 +117,7 @@ def run():
 			
 			# Slice only the required time window into memory
 			image_data_chunk = raw_signal_var[i1:end_chunk, :, :]
-			image_time_chunk = baselinedate + time_var[i1:end_chunk].astype('timedelta64[s]')
+			image_time_chunk = Time(baselinedate + time_var[i1:end_chunk].astype('timedelta64[s]'))
 			roll_deg = roll[i1:end_chunk]
 			pitch_deg = pitch[i1:end_chunk]
 			yaw_deg = yaw[i1:end_chunk]
@@ -157,8 +158,8 @@ def run():
 				altaz_frame = AltAz(obstime=image_time_chunk[i2], location=location)
 
 				# 5. Transform the Sun's coordinates into the local AltAz frame
-				sun_altaz = sun_coord.transform_to(altaz_frame)
-				
+				sun_altaz = sun_pos.transform_to(altaz_frame)
+
 				chunk_pan[i2] = sun_altaz.az.deg
 				chunk_tilt[i2] = sun_altaz.alt.deg 
 
