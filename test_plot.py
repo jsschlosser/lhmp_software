@@ -19,9 +19,9 @@ def demosaic_test():
 
 	file_suffix = input("Enter filename suffix or leave empty to default to test: ")
 	if file_suffix=="":
-		pathto_raw_data_file = f'../Level_0_Data/BayerRG8_{desired_data_date}_test.nc'
+		pathto_raw_data_file = f'../L0_Data/BayerRG8_{desired_data_date}_test.nc'
 	else:
-		pathto_raw_data_file = f'../Level_0_Data/BayerRG8_{desired_data_date}_{file_suffix}.nc'
+		pathto_raw_data_file = f'../L0_Data/BayerRG8_{desired_data_date}_{file_suffix}.nc'
 
 	data = Dataset(pathto_raw_data_file,'r')
 	data_dictionary = {}		 
