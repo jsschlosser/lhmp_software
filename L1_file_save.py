@@ -163,9 +163,6 @@ def run():
 				chunk_pan[i2] = sun_altaz.az.deg
 				chunk_tilt[i2] = sun_altaz.alt.deg 
 
-				#chunk_pan[i2] = np.degrees(sun_pos['azimuth'])
-				#chunk_tilt[i2] = np.degrees(sun_pos['altitude'])
-
 				chunk_vaa[i2,...],chunk_vza[i2,...] = view_geometry.run(roll_deg[i2], pitch_deg[i2], yaw_deg[i2], pixel_look_vectors)			 
 
 			# --- Step 3: Stream and write current computed chunk directly to disk ---
