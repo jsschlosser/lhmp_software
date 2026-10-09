@@ -109,7 +109,7 @@ def run():
 
 		# --- Step 2: Chunked processing loop (One time-step/chunk at a time) ---
 		# Adjust the step size if you want to process in small batches (e.g., step=10)
-		chunk_step = 240 
+		chunk_step = 120
 		
 		for i1 in range(0, dataset_length, chunk_step):
 			end_chunk = min(i1 + chunk_step, dataset_length)
@@ -150,9 +150,20 @@ def run():
 					chunk_lat[i2] = np.mean(gpslat[gps_index])
 					chunk_alt[i2] = np.mean(gpsalt[gps_index])
 				
-				sun_pos = get_position(image_time_chunk[i2], chunk_lon[i2], chunk_lat[i2])
-				chunk_pan[i2] = np.degrees(sun_pos['azimuth'])
-				chunk_tilt[i2] = np.degrees(sun_pos['altitude'])
+				# 1. Define the observer's location (Hampton, VA)
+				location = EarthLocation(lat=chunk_lat[i2] * u.deg, lon=chunk_lon[i2] * u.deg, height=5.0 * u.m)
+				sun_pos = get_sun(image_time_chunk[i2])
+				# 4. Create the local horizontal frame (Altitude-Azimuth) for the observer
+				altaz_frame = AltAz(obstime=image_time_chunk[i2], location=location)
+
+				# 5. Transform the Sun's coordinates into the local AltAz frame
+				sun_altaz = sun_coord.transform_to(altaz_frame)
+				
+				chunk_pan[i2] = sun_altaz.az.deg
+				chunk_tilt[i2] = sun_altaz.alt.deg 
+
+				#chunk_pan[i2] = np.degrees(sun_pos['azimuth'])
+				#chunk_tilt[i2] = np.degrees(sun_pos['altitude'])
 
 				chunk_vaa[i2,...],chunk_vza[i2,...] = view_geometry.run(roll_deg[i2], pitch_deg[i2], yaw_deg[i2], pixel_look_vectors)			 
 
