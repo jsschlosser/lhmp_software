@@ -31,6 +31,10 @@ def run():
 	else:
 		pathto_raw_data_file = f'../L0_data/BayerRG8_{desired_data_date}_{file_suffix}.nc'		
 		pathto_L1_data_file = f'../L1_data/BayerRG8_{desired_data_date}_{file_suffix}.nc'
+	file_prefix = input("Enter path name or leave empty to default to standard path (i.e., ../): ")
+	if file_prefix !="":
+		pathto_raw_data_file = f'{file_prefix}/L0_data/BayerRG8_{desired_data_date}_{file_suffix}.nc'		
+		pathto_L1_data_file = f'{file_prefix}/L1_data/BayerRG8_{desired_data_date}_{file_suffix}.nc'
 
 	physical_focal_length_mm = 6.0 # default, will update with method for getting exact values later.
 	pixel_size_mm = 0.00345
