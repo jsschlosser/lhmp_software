@@ -147,31 +147,6 @@ Hardware Requirements
 
 	a) pip3 install adafruit-circuitpython-icm20x --break-system-packages
 
-Example of running and plotting data
-------------------------------------
-
-This section shows the steps required to collect test data from the LHMP replica and ensure instrument functionality. 
-
-1) Set appropriate directory with python scripts:
-	.. code-block:: console
-
-		$ cd ~/Documents
-
-2) Run sample python script:
-	.. code-block:: console
-
-		$ python3
-		>>> import test_sample
-		>>> test_sample.run()
-
-c) Demosaic and plot test data:
-	.. code-block:: console
-
-		$ pip install polanalyser
-		$ python3
-		>>> import test_plot
-		>>> test_plot.demosaic_test()
-		>>> test_plot.standard_test()
 
 Instructions for building sphinx documentation locally
 ------------------------------------------------------
@@ -233,6 +208,62 @@ Test the instrument functionality
 .. automodule:: IMU_read
 	:members:
 
+Configure Python on system used for data processing and analysis  
+----------------------------------------------------------------
+This section describes how to set up a system for processing and analyzing LHMP data.
+
+1) Install conda-miniforge for your system (e.g., MacOS, Windows, or Luinux):
+	Follow the instructions at: https://conda-forge.org/download/
+
+2) Set up virtual environment and install sunpy:
+	.. code-block:: console
+
+		$ conda create --name sunpy
+		$ conda activate sunpy
+		$ conda install sunpy
+
+3) Install netCDF4, h5py, and polanalyser packages:
+	.. code-block:: console
+
+		$ pip install h5py netCDF4 polanalyser
+
+4) Create directories L1_data and L0_data, and place raw lhmp .nc data into the L0_data directory.
+
+5) Process L0 data to L1_data:
+ 	.. code-block:: console
+
+ 		$ python
+ 		>>> import L1_file_save
+		>>> L1_file_save.run()
+
+6) Follow prompts to match data file being processed
+
+Example of running and plotting data
+------------------------------------
+
+This section shows the steps required to collect test data from the LHMP replica and ensure instrument functionality. 
+
+1) Set appropriate directory with python scripts:
+	.. code-block:: console
+
+		$ cd ~/Documents
+
+2) Run sample python script:
+	.. code-block:: console
+
+		$ python3
+		>>> import test_sample
+		>>> test_sample.run()
+
+3) Demosaic and plot test data:
+	.. code-block:: console
+
+		$ pip install polanalyser
+		$ python3
+		>>> import test_plot
+		>>> test_plot.demosaic_test()
+		>>> test_plot.standard_test()	
+
 Perform dark calibration measurements
 -------------------------------------
 
@@ -240,6 +271,8 @@ Perform dark calibration measurements
 
 
 .. autofunction:: dark_cal_data_collection.dark_read
+
+
 
 
 Visualize dark calibration measurements
