@@ -22,8 +22,8 @@ def demosaic_test():
 		pathto_raw_data_file = f'../L0_Data/BayerRG8_{desired_data_date}_test.nc'
 	else:
 		pathto_raw_data_file = f'../L0_Data/BayerRG8_{desired_data_date}_{file_suffix}.nc'
-        if file_prefix !=="":
-                pathto_raw_data_file = f'{file_prefix}/L0_Data/BayerRG8_{desired_data_date}_test.nc'
+	if file_prefix !="":
+		pathto_raw_data_file = f'{file_prefix}/L0_Data/BayerRG8_{desired_data_date}_test.nc'
 
 	data = Dataset(pathto_raw_data_file,'r')
 	data_dictionary = {}		 
