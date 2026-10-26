@@ -184,9 +184,6 @@ Test the instrument functionality
 .. autofunction:: test_sample.run
 
 
-.. autofunction:: test_sample.run
-
-
 .. autofunction:: data_file_save.gen_file
 
 
