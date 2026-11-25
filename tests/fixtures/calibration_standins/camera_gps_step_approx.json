@@ -1,0 +1,39 @@
+{
+  "format": "LHMP_CAD_FRAME_ESTIMATE_V1",
+  "calibration_data_status": "synthetic_cad_estimate_not_for_science",
+  "source_file": "LHMP.step",
+  "source_entities": {
+    "root_assembly_frame": 659685,
+    "camera_occurrence": 16792,
+    "camera_transformation": 19212,
+    "camera_component_frame": 660609,
+    "camera_frame_origin": 869973,
+    "camera_frame_axis": 707082,
+    "camera_frame_reference_direction": 707083,
+    "gps_module_occurrence": 16772,
+    "gps_module_transformation": 19192,
+    "gps_module_component_frame": 659711,
+    "gps_frame_origin": 851674,
+    "gps_frame_axis": 704500,
+    "gps_frame_reference_direction": 704501
+  },
+  "units": "m",
+  "transform_direction": "camera_component_frame_to_gps_module_component_frame",
+  "matrix_convention": "Column vectors: coordinates_gps = rotation_camera_to_gps * coordinates_camera; matrix columns are camera axes expressed in the GPS module frame.",
+  "rotation_camera_to_gps": [
+    [0.0, 0.0, -1.0],
+    [0.0, -1.0, 0.0],
+    [-1.0, 0.0, 0.0]
+  ],
+  "translation_camera_origin_in_gps_m": [
+    0.0412735505246635,
+    0.0188280918601009,
+    0.0806577717276864
+  ],
+  "limitations": [
+    "STEP component frame axes are not verified against the camera optical or sensor axes.",
+    "The GPS module frame is not an ENU, north, or heading reference.",
+    "The candidate camera-to-IMU mechanical estimate is in camera_imu_step_approx.json and is not applied.",
+    "This estimate is not applied in processing and must not be used for science."
+  ]
+}

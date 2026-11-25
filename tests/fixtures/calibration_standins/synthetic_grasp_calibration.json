@@ -1,0 +1,23 @@
+{
+  "format": "LHMP_GRASP_CALIBRATION_V1",
+  "calibration_data_status": "synthetic_not_for_science",
+  "stokes_reference_frame": "grasp_scattering_plane",
+  "land_percent": 100,
+  "channels": {
+    "blue": {
+      "wavelength_um": 0.45,
+      "reduced_radiance_per_dn": 0.01,
+      "dark_stokes_dn": {"I": 0, "Q": 0, "U": 0}
+    },
+    "green": {
+      "wavelength_um": 0.55,
+      "reduced_radiance_per_dn": 0.01,
+      "dark_stokes_dn": {"I": 0, "Q": 0, "U": 0}
+    },
+    "red": {
+      "wavelength_um": 0.65,
+      "reduced_radiance_per_dn": 0.01,
+      "dark_stokes_dn": {"I": 0, "Q": 0, "U": 0}
+    }
+  }
+}

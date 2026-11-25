@@ -235,6 +235,9 @@ This section describes how to set up a system for processing and analyzing LHMP 
 
 6) Follow prompts to match data file being processed
 
+For dark/flat-field calibration, radiometric and spectral calibration, and
+GRASP SDATA conversion, see :doc:`calibration`.
+
 Example of running and plotting data
 ------------------------------------
 

@@ -16,10 +16,15 @@ import nc_write
 import NMEA_decode
 import look_vectors
 import view_geometry
-def run():
+import calibration
+
+
+def run(raw_calibration_path=None):
 	"""
 	Copies an existing NetCDF file to a new location, processes polarization data
 	in memory-efficient chunks, and writes directly to disk to prevent OOM errors.
+
+	:param raw_calibration_path: Optional NPZ dark/flat-field bundle for Raw_Signal.
 	"""
 	desired_data_date = input("Enter the date of the desired raw data in iso format (YYYY-MM-DD) or leave blank to default to today's date: ")
 	if desired_data_date == "":
@@ -61,6 +66,14 @@ def run():
 		dataset_length = raw_signal_var.shape[0]# Get dimensions dynamically from variable shapes
 		h_pixel_length = raw_signal_var.shape[1]
 		v_pixel_length = raw_signal_var.shape[2]
+		raw_calibration = None
+		if raw_calibration_path is not None:
+			raw_calibration = calibration.load_raw_calibration(raw_calibration_path)
+			if raw_calibration['dark_offset_dn'].shape != (h_pixel_length, v_pixel_length):
+				raise ValueError("Raw calibration dimensions do not match Raw_Signal")
+			dataset.raw_spatial_calibration_applied = 'dark subtraction and flat-field correction'
+		else:
+			print("Warning: no raw dark/flat-field calibration was applied.")
 		
 		angles = np.deg2rad([0, 45, 90, 135])
 		new_dims = ('time', 'H_pixel', 'V_pixel')
@@ -80,8 +93,8 @@ def run():
 		nc_vars = {}
 		for clr in colors:# --- Step 1: Pre-create NetCDF variables on disk before processing ---
 			for prefix, s_short, s_long in [('I', 'total intensity', 'light intensity signal in digital number (DN)'),
-											('Q', 'horizontal-vertical intensity', 'I_(90)-I_(0) linear polarization'),
-											('U', 'diagonal intensity', 'I_(+45)-I_(-45) degree linear polarization')]:
+											('Q', 'horizontal-vertical intensity', 'I_(0)-I_(90) linear polarization'),
+											('U', 'diagonal intensity', 'I_(45)-I_(135) degree linear polarization')]:
 				var_name = f'{prefix}_{clr}'
 				v = dataset.createVariable(var_name, 'f4', new_dims, zlib=True, complevel=5) # Lowered complevel to 5 for speed
 				v.short_name = s_short
@@ -114,13 +127,26 @@ def run():
 
 		# --- Step 2: Chunked processing loop (One time-step/chunk at a time) ---
 		# Adjust the step size if you want to process in small batches (e.g., step=10)
-		chunk_step = 120
+		chunk_step = 4
 		
 		for i1 in range(0, dataset_length, chunk_step):
 			end_chunk = min(i1 + chunk_step, dataset_length)
 			
 			# Slice only the required time window into memory
 			image_data_chunk = raw_signal_var[i1:end_chunk, :, :]
+			if raw_calibration is not None:
+				exposure_var = dataset.variables['Detector_Exposure_Time']
+				gain_var = dataset.variables['Detector_Gain']
+				calibrated_chunk = np.empty(image_data_chunk.shape, dtype=np.float32)
+				for chunk_index, frame_index in enumerate(range(i1, end_chunk)):
+					calibrated_chunk[chunk_index] = calibration.apply_raw_calibration(
+						image_data_chunk[chunk_index],
+						raw_calibration,
+						exposure_time_us=exposure_var[frame_index],
+						gain_db=gain_var[frame_index],
+						saturation_dn=255,
+					)
+				image_data_chunk = calibrated_chunk
 			image_time_chunk = Time(baselinedate + time_var[i1:end_chunk].astype('timedelta64[s]'))
 			roll_deg = roll[i1:end_chunk]
 			pitch_deg = pitch[i1:end_chunk]

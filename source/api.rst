@@ -16,6 +16,7 @@ API
     test_sample
     geometric_correction
     netcdf_to_grasp
+    calibration
     view_geometry
     IMU_read
     NMEA_decode

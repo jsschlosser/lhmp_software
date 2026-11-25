@@ -1,0 +1,50 @@
+{
+  "format": "LHMP_CAMERA_IMU_FRAME_ESTIMATE_V1",
+  "calibration_data_status": "synthetic_cad_estimate_not_for_science",
+  "source_file": "LHMP.step",
+  "imu_model": "Adafruit ICM-20948 STEMMA QT breakout",
+  "source_entities": {
+    "root_assembly_frame": 659685,
+    "camera_occurrence": 16792,
+    "camera_transformation": 19212,
+    "camera_component_frame": 660609,
+    "imu_candidate_occurrence": 17269,
+    "imu_candidate_occurrence_name": "NAUO498 / Part 56",
+    "imu_transformation": 19689,
+    "imu_component_frame": 680668
+  },
+  "units": "m",
+  "transform_direction": "camera_component_frame_to_imu_component_frame",
+  "matrix_convention": "Column vectors: coordinates_imu = rotation_camera_to_imu * coordinates_camera; matrix columns are camera axes expressed in the IMU frame.",
+  "rotation_camera_to_imu": [
+    [-1.0, 0.0, 0.0],
+    [0.0, 0.0, 1.0],
+    [0.0, 1.0, 0.0]
+  ],
+  "translation_camera_origin_in_imu_m": [
+    0.04965136,
+    0.03900958,
+    0.01901613
+  ],
+  "axis_mapping": {
+    "camera_x_right": "imu_x_negative",
+    "camera_y_boresight": "imu_z_positive",
+    "camera_z_up": "imu_y_positive"
+  },
+  "assumptions": [
+    "The 3x3x1 mm Part 56 geometry is the ICM-20948 sensor package.",
+    "The camera uses +X right, +Y boresight, +Z up, as in look_vectors.py.",
+    "IMU +Z points in the same direction as camera +Y; parallel alone would not determine this sign.",
+    "The Adafruit board-axis marking is +X toward the left and +Y toward the top when viewed from the component side."
+  ],
+  "limitations": [
+    "The STEP export labels the candidate as Part 56, not by the Adafruit product name.",
+    "The sensor/package axes and physical board mounting must be checked against the installed unit.",
+    "This mechanical estimate does not calibrate IMU attitude or magnetic heading.",
+    "This estimate is not applied in processing and must not be used for science."
+  ],
+  "references": [
+    "https://learn.adafruit.com/adafruit-tdk-invensense-icm-20948-9-dof-imu/pinouts",
+    "https://invensense.tdk.com/wp-content/uploads/2016/06/DS-000189-ICM-20948-v1.3.pdf"
+  ]
+}
