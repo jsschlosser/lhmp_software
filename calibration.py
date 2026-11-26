@@ -1,9 +1,137 @@
 """LHMP dark, flat-field, spectral, and Stokes-axis calibration utilities."""
 
+import csv
+import json
+import math
 import os
 
 import netCDF4 as nc
 import numpy as np
+
+
+CHANNELS = ("blue", "green", "red")
+STOKES_COMPONENTS = ("I", "Q", "U")
+
+
+def load_grasp_calibration(path):
+    """Load measured channel radiometry and wavelength values from a JSON profile."""
+    with open(path, "r", encoding="utf-8") as calibration_file:
+        profile = json.load(calibration_file)
+
+    status = str(profile.get("calibration_data_status", "")).lower()
+    if "synthetic" in status:
+        raise ValueError("Synthetic calibration profiles cannot be applied")
+    if profile.get("format") != "LHMP_GRASP_CALIBRATION_V1":
+        raise ValueError("Calibration profile format must be LHMP_GRASP_CALIBRATION_V1")
+
+    try:
+        land_percent = float(profile["land_percent"])
+        channel_profiles = profile["channels"]
+    except (KeyError, TypeError, ValueError) as error:
+        raise ValueError("Calibration profile is missing land_percent or channels") from error
+    if not math.isfinite(land_percent) or not 0 <= land_percent <= 100:
+        raise ValueError("land_percent must be a finite value between 0 and 100")
+
+    channels = {}
+    for channel in CHANNELS:
+        try:
+            settings = channel_profiles[channel]
+            wavelength_um = float(settings["wavelength_um"])
+            scale = float(settings["reduced_radiance_per_dn"])
+            offsets = {
+                component: float(settings["dark_stokes_dn"][component])
+                for component in STOKES_COMPONENTS
+            }
+        except (KeyError, TypeError, ValueError) as error:
+            raise ValueError(
+                f"Calibration profile is missing valid {channel} wavelength, "
+                "reduced_radiance_per_dn, or dark_stokes_dn values"
+            ) from error
+        if not math.isfinite(wavelength_um) or wavelength_um <= 0:
+            raise ValueError(f"{channel} wavelength_um must be finite and positive")
+        if not math.isfinite(scale) or scale <= 0:
+            raise ValueError(f"{channel} reduced_radiance_per_dn must be finite and positive")
+        if not all(math.isfinite(value) for value in offsets.values()):
+            raise ValueError(f"{channel} dark Stokes offsets must be finite")
+        channels[channel] = {
+            "wavelength_um": wavelength_um,
+            "reduced_radiance_per_dn": scale,
+            "dark_stokes_dn": offsets,
+        }
+
+    wavelengths = [channels[channel]["wavelength_um"] for channel in CHANNELS]
+    if any(right <= left for left, right in zip(wavelengths, wavelengths[1:])):
+        raise ValueError("Channel wavelengths must be in increasing blue/green/red order")
+    return {"land_percent": land_percent, "channels": channels}
+
+
+def load_geometric_calibration(path):
+    """Load a geometric_correction.py CSV record and return its camera intrinsics."""
+    with open(path, "r", newline="", encoding="utf-8") as calibration_file:
+        rows = list(csv.DictReader(calibration_file))
+    if len(rows) != 1:
+        raise ValueError("Geometric calibration CSV must contain exactly one data row")
+    row = rows[0]
+    if row.get("format") != "LHMP_CAMERA_CALIBRATION_V1":
+        raise ValueError("Unsupported geometric calibration CSV format")
+    try:
+        matrix = np.array(
+            [
+                [float(row[f"camera_matrix_{r}{c}"]) for c in range(3)]
+                for r in range(3)
+            ],
+            dtype=np.float64,
+        )
+        distortion = np.asarray(
+            json.loads(row["distortion_coefficients_json"]), dtype=np.float64
+        )
+        image_width = int(row["image_width_px"])
+        image_height = int(row["image_height_px"])
+        rms = float(row["rms_reprojection_error_px"])
+    except (KeyError, TypeError, ValueError, json.JSONDecodeError) as error:
+        raise ValueError("Geometric calibration CSV contains invalid values") from error
+    if (
+        matrix.shape != (3, 3)
+        or not np.all(np.isfinite(matrix))
+        or matrix[0, 0] <= 0
+        or matrix[1, 1] <= 0
+        or not np.allclose(matrix[2], [0.0, 0.0, 1.0])
+    ):
+        raise ValueError("Geometric calibration camera matrix is invalid")
+    if distortion.ndim != 1 or not distortion.size or not np.all(np.isfinite(distortion)):
+        raise ValueError("Geometric calibration distortion coefficients are invalid")
+    if image_width <= 0 or image_height <= 0 or not math.isfinite(rms) or rms < 0:
+        raise ValueError("Geometric calibration image size or reprojection error is invalid")
+    return {
+        "camera_matrix": matrix,
+        "distortion_coefficients": distortion,
+        "image_width_px": image_width,
+        "image_height_px": image_height,
+        "rms_reprojection_error_px": rms,
+    }
+
+
+def load_camera_imu_calibration(path):
+    """Load a physically validated camera-to-IMU rotation matrix."""
+    with open(path, "r", encoding="utf-8") as calibration_file:
+        profile = json.load(calibration_file)
+    status = str(profile.get("calibration_data_status", "")).lower()
+    if "synthetic" in status or status not in {"measured", "validated"}:
+        raise ValueError("Camera-to-IMU calibration must be measured and validated")
+    if profile.get("format") != "LHMP_CAMERA_IMU_CALIBRATION_V1":
+        raise ValueError("Camera-to-IMU calibration format must be LHMP_CAMERA_IMU_CALIBRATION_V1")
+    try:
+        rotation = np.asarray(profile["rotation_camera_to_imu"], dtype=np.float64)
+    except (KeyError, TypeError, ValueError) as error:
+        raise ValueError("Camera-to-IMU calibration has no valid rotation matrix") from error
+    if (
+        rotation.shape != (3, 3)
+        or not np.all(np.isfinite(rotation))
+        or not np.allclose(rotation.T @ rotation, np.eye(3), atol=1e-6)
+        or not np.isclose(np.linalg.det(rotation), 1.0, atol=1e-6)
+    ):
+        raise ValueError("Camera-to-IMU calibration must be a proper 3x3 rotation matrix")
+    return rotation
 
 
 def effective_wavelength_um(

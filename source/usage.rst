@@ -226,14 +226,23 @@ This section describes how to set up a system for processing and analyzing LHMP 
 
 4) Create directories L1_data and L0_data, and place raw lhmp .nc data into the L0_data directory.
 
-5) Process L0 data to L1_data:
+5) Process L0 data to L1_data (pass calibrated profiles when available):
  	.. code-block:: console
 
  		$ python
  		>>> import L1_file_save
-		>>> L1_file_save.run()
+		>>> L1_file_save.run(raw_calibration_path="raw_calibration.npz",
+		...                   stokes_calibration_path="grasp_calibration.json",
+		...                   geometric_calibration_path="geometric_calibration.csv",
+		...                   camera_imu_calibration_path="camera_imu_calibration.json")
 
 6) Follow prompts to match data file being processed
+
+7) Convert eligible L1 files, run the installed GRASP executable, and save
+   the products selected in its YAML settings to NetCDF:
+   .. code-block:: console
+
+      $ python grasp_workflow.py ../L1_data --settings retrieval.yml --output ../GRASP_results --grasp-executable grasp
 
 For dark/flat-field calibration, radiometric and spectral calibration, and
 GRASP SDATA conversion, see :doc:`calibration`.

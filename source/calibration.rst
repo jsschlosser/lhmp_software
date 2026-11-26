@@ -2,9 +2,12 @@ LHMP calibration workflow
 =========================
 
 Calibration is required before producing physically meaningful GRASP SDATA.
-The Level 1 Stokes variables currently contain detector counts (DN), not
-radiance, and the manufacturer spectral-response curve is not an absolute
-radiometric calibration.
+The Level 1 ``I_*``, ``Q_*``, and ``U_*`` variables retain detector counts
+(DN). When a measured Stokes calibration profile is supplied, L1 also writes
+dimensionless reduced-radiance variables (``I_*_reduced``, ``Q_*_reduced``,
+and ``U_*_reduced``) and records their wavelengths and calibration factors.
+The manufacturer spectral-response curve is not an absolute radiometric
+calibration.
 
 Spectral response and effective wavelength
 -------------------------------------------
@@ -201,13 +204,14 @@ together.
    exact GRASP positive-Q axis and angle convention. The stage sweep determines
    instrument response and angular zero; it does not by itself determine the
    field-observation transform, which also depends on viewing and solar
-   geometry and camera-to-IMU alignment. The current L1 pipeline has no
-   camera-to-scattering-plane transform. Its sensor-frame Stokes convention
-   and Q/U labels can be checked in software, but the end-to-end transform
-   cannot be validated until it is implemented and tested against captured
-   polarizer data with independently established geometry. Do not set
-   ``stokes_reference_frame`` to ``grasp_scattering_plane`` or use the GRASP
-   converter for polarized retrievals before both validations pass.
+   geometry and camera-to-IMU alignment. The current L1 pipeline does not
+   transform sensor-frame Q/U into GRASP's reference plane. Its sensor-frame
+   Stokes convention and Q/U labels can be
+   checked in software, but the end-to-end transform cannot be validated until
+   it is implemented and tested against captured polarizer data with
+   independently established geometry. Do not set ``stokes_reference_frame`` to
+   ``grasp_scattering_plane`` or use the GRASP converter for polarized retrievals
+   before both validations pass.
 
 5. **Stokes dark offsets and acceptance.** Process dark captures through the
    same demosaicing and Stokes calculation as science data. Derive residual
@@ -230,40 +234,103 @@ should their values be entered into the GRASP calibration JSON.
 Applying raw spatial calibration
 ---------------------------------
 
-Pass the generated NPZ bundle when converting L0 raw data to L1::
+The geometric calibration routine now writes ``geometric_calibration.csv``
+with the complete 3x3 camera matrix, distortion coefficients, image size,
+checkerboard settings, RMS reprojection error, accepted image names, and
+per-image pose/error results::
+
+    python geometric_correction.py --images "geometric_calibration_images/*.png"
+
+Pass the measured calibration products while converting L0 raw data to L1::
 
     >>> import L1_file_save
-    >>> L1_file_save.run(raw_calibration_path='raw_calibration.npz')
+    >>> L1_file_save.run(
+    ...     raw_calibration_path='raw_calibration.npz',
+    ...     stokes_calibration_path='grasp_calibration.json',
+    ...     geometric_calibration_path='geometric_calibration.csv',
+    ...     camera_imu_calibration_path='camera_imu_calibration.json')
 
 Dark subtraction and flat-field correction are applied to each raw frame
 before demosaicing and Stokes calculation. Saturated raw samples are marked
 invalid; they cannot be recovered by calibration. The input exposure and gain
-must match the calibration bundle. The original ``Raw_Signal`` variable is
-preserved, and the L1 file records that spatial calibration was applied.
+must match the calibration bundle. The original ``Raw_Signal`` variable and
+the DN Stokes variables are preserved. The measured Stokes dark offsets and
+reduced-radiance scale are applied in L1 and stored in separate
+dimensionless ``*_reduced`` variables; ``netcdf_to_grasp.py`` now serializes
+those values without applying a second calibration. If the Stokes profile is
+omitted, the reduced-radiance variables are not created and conversion stops.
 
-This correction is not an absolute radiometric calibration and does not
-perform the polarimetric reference-frame transform. Complete those
-instrument-specific calibrations before using the data for a polarized GRASP
-retrieval.
+The polarimeter faces upward. L1 maps its camera boresight (+Y) to IMU +Z using
+the current STEP/datasheet candidate matrix, so a level boresight has view
+zenith 0 degrees. This mechanical alignment is explicitly marked as an
+unvalidated CAD estimate in the output; it is not sufficient for a science
+retrieval. The geometric CSV supplies camera intrinsics and lens distortion,
+but does not validate camera-to-IMU mounting or IMU attitude.
 
-GRASP calibration profile
--------------------------
+After physical alignment is measured, a camera-to-IMU JSON calibration can be
+passed with format ``LHMP_CAMERA_IMU_CALIBRATION_V1``, status
+``calibration_data_status: measured``, and a proper 3x3
+``rotation_camera_to_imu`` matrix using the documented column-vector
+convention. The STEP estimate in the fixtures is rejected by this loader.
 
-``netcdf_to_grasp.py`` requires a JSON profile with format
-``LHMP_GRASP_CALIBRATION_V1``. It must contain:
+The GRASP angle convention follows the official ground-based conversion:
+``theta_GRASP = 180 - theta_ground`` and ``phi_GRASP = 180 + phi_ground``.
+For upward sky observations this means ``solar_zenith_GRASP = 90 +
+solar_altitude``; camera view zenith is converted as ``180 - view_zenith``.
+The previous converter used the wrong solar-zenith formula, which could
+produce invalid GRASP solar geometry.
+
+L1 Stokes calibration profile
+------------------------------
+
+``L1_file_save.run(stokes_calibration_path=...)`` accepts a JSON profile with
+format ``LHMP_GRASP_CALIBRATION_V1``. It must contain:
 
 * ``land_percent``: the measured/selected land fraction for the observation.
-* ``stokes_reference_frame``: ``grasp_scattering_plane`` only after Q/U have
-  actually been transformed and validated in that frame.
 * For each ``blue``, ``green``, and ``red`` channel: ``wavelength_um``,
   ``reduced_radiance_per_dn``, and measured dark offsets for ``I``, ``Q``, and
   ``U`` in ``dark_stokes_dn``.
 
 Use the effective wavelength and radiometric factors measured for the
 complete instrument. Do not copy nominal RGB wavelengths or unverified values
-from an example. The profile scale converts corrected Stokes DN directly to
-dimensionless reduced Stokes radiance; the converter does not manufacture
-calibration values.
+from an example. The profile scale converts the dark-corrected Stokes DN to
+dimensionless reduced Stokes radiance in L1. The converter reads the L1
+calibration metadata and does not load or apply a calibration profile.
+
+GRASP conversion additionally requires a validated camera intrinsic
+calibration, camera-to-IMU alignment, and Q/U values already transformed to
+``grasp_scattering_plane``. The present L1 pipeline records Q/U as
+``sensor_image_plane`` and marks the camera-to-IMU matrix as an unvalidated
+estimate unless a measured alignment profile is supplied, so production
+conversion correctly refuses these files until Q/U has also been transformed
+and validated. The conversion guard is intentional; the existing Q/U helper
+validates the algebraic rotation only, not the physical camera-to-GRASP frame.
+
+GRASP retrieval runner
+----------------------
+
+``grasp_workflow.py`` converts each eligible L1 file to SDATA, runs the
+installed GRASP executable, and asks its NetCDF tile-output function to write
+the results. Supply an existing GRASP YAML settings file::
+
+    python grasp_workflow.py "B:\\Hampton_University\\HU_Polarimetry_Lab\\L1_data" `
+        --settings "path\\to\\retrieval.yml" `
+        --output "B:\\Hampton_University\\HU_Polarimetry_Lab\\GRASP_results" `
+        --grasp-executable grasp
+
+The NetCDF file contains the products enabled by that settings file; GRASP
+does not have one universal set of outputs. Configure the desired aerosol
+products under ``retrieval.products`` and choose a retrieval strategy
+appropriate to the measured instrument data. The runner requests
+``output.tile.function=netcdf``; the installed GRASP build must include that
+optional output function. GRASP is not installed in this development
+environment, and no scientific retrieval settings are bundled because the
+model, constraints, and priors must be selected for the experiment.
+Obtaining and compiling GRASP itself follows the `official installation
+documentation <https://www.grasp-open.com/doc/ch03.php>`_; source access may
+require a registered GRASP-Open account. Run this local workflow in the same
+Linux/WSL environment as the executable so the binary, settings includes,
+and data paths share a filesystem namespace.
 
 Software-only stand-ins and CAD estimate
 -----------------------------------------
@@ -307,14 +374,15 @@ It does not calibrate IMU attitude or magnetic heading, nor does it provide the
 camera-to-GRASP scattering-plane transform; the latter still requires the
 polarimetric reference-frame calibration described above.
 
-Conversion samples every 128th pixel by default to keep SDATA size practical::
+Conversion samples every 128th pixel by default to keep SDATA size practical.
+It reads only the calibrated fields already stored in L1::
 
     python netcdf_to_grasp.py "B:\\Hampton_University\\HU_Polarimetry_Lab\\L1_data" `
-        --calibration grasp_calibration.json
+        --pixel-stride 128
 
 Set ``--pixel-stride`` to change spatial sampling. A directory conversion
-validates every NetCDF file before writing any output. As requested, it stops
-if any input is raw-only or missing L1 Stokes, geometry, or location fields;
-process such files to L1 with the associated GPS data first. Outputs are
-written as GRASP ``SDATA version 2.0`` files in ``grasp_sdata``. No cloud
-screening is performed; available pixels are marked clear in the SDATA file.
+validates every NetCDF file before writing any output. It stops if any input
+is raw-only, lacks calibration metadata, or has not passed the physical
+reference-frame and camera/IMU checks. Outputs are written as GRASP
+``SDATA version 2.0`` files in ``grasp_sdata``. No cloud screening is
+performed; available pixels are marked clear in the SDATA file.

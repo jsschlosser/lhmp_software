@@ -1,4 +1,5 @@
 import os
+import json
 import tempfile
 import unittest
 
@@ -7,6 +8,9 @@ import numpy as np
 import polanalyser as pa
 
 import calibration
+import geometric_correction
+import look_vectors
+import view_geometry
 
 
 FIXTURE_DIRECTORY = os.path.join(
@@ -93,6 +97,35 @@ class RawCalibrationTests(unittest.TestCase):
                 os.path.join(FIXTURE_DIRECTORY, "synthetic_raw_calibration.npz")
             )
 
+    def test_refuses_synthetic_stokes_profile(self):
+        with self.assertRaisesRegex(ValueError, "Synthetic calibration profiles"):
+            calibration.load_grasp_calibration(
+                os.path.join(FIXTURE_DIRECTORY, "synthetic_grasp_calibration.json")
+            )
+
+    def test_loads_measured_stokes_calibration_fields(self):
+        profile_path = os.path.join(self.temporary_directory.name, "stokes.json")
+        channels = {}
+        for channel, wavelength in zip(("blue", "green", "red"), (0.45, 0.55, 0.65)):
+            channels[channel] = {
+                "wavelength_um": wavelength,
+                "reduced_radiance_per_dn": 0.01,
+                "dark_stokes_dn": {"I": 1.0, "Q": 0.2, "U": -0.1},
+            }
+        with open(profile_path, "w", encoding="utf-8") as profile_file:
+            json.dump(
+                {
+                    "format": "LHMP_GRASP_CALIBRATION_V1",
+                    "land_percent": 100,
+                    "channels": channels,
+                },
+                profile_file,
+            )
+
+        loaded = calibration.load_grasp_calibration(profile_path)
+        self.assertEqual(loaded["channels"]["green"]["wavelength_um"], 0.55)
+        self.assertEqual(loaded["channels"]["blue"]["dark_stokes_dn"]["Q"], 0.2)
+
 
 class StokesRotationTests(unittest.TestCase):
     def test_polanalyser_and_rotation_recover_known_linear_states(self):
@@ -150,6 +183,91 @@ class StokesRotationTests(unittest.TestCase):
     def test_rejects_nonfinite_reference_axis_angle(self):
         with self.assertRaisesRegex(ValueError, "angle must be finite"):
             calibration.rotate_stokes_qu(1.0, 0.0, np.nan)
+
+
+class GeometricCalibrationTests(unittest.TestCase):
+    def setUp(self):
+        self.temporary_directory = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary_directory.cleanup)
+
+    def test_csv_round_trip_preserves_intrinsics_and_distortion(self):
+        expected_matrix = np.array(
+            [[1200.0, 0.0, 640.0], [0.0, 1190.0, 480.0], [0.0, 0.0, 1.0]]
+        )
+        output_path = os.path.join(self.temporary_directory.name, "camera.csv")
+        geometric_correction.write_calibration_csv(
+            {
+                "camera_matrix": expected_matrix,
+                "distortion_coefficients": np.array([0.1, -0.02, 0.001, 0.002, 0.0]),
+                "image_width_px": 1280,
+                "image_height_px": 960,
+                "rms_reprojection_error_px": 0.25,
+                "checkerboard_columns": 9,
+                "checkerboard_rows": 6,
+                "square_size": 1.0,
+                "accepted_images": ["capture.png"],
+                "rotation_vectors": [[0.0, 0.0, 0.0]],
+                "translation_vectors": [[1.0, 2.0, 3.0]],
+                "per_view_rms_reprojection_error_px": [0.2],
+            },
+            output_path,
+        )
+
+        loaded = calibration.load_geometric_calibration(output_path)
+        np.testing.assert_allclose(loaded["camera_matrix"], expected_matrix)
+        np.testing.assert_allclose(
+            loaded["distortion_coefficients"], [0.1, -0.02, 0.001, 0.002, 0.0]
+        )
+        self.assertEqual(loaded["image_width_px"], 1280)
+
+    def test_calibration_rejects_empty_image_list(self):
+        with self.assertRaisesRegex(ValueError, "No geometric calibration images"):
+            geometric_correction.calibrate_camera([])
+
+    def test_camera_to_imu_transform_points_upward_boresight_to_zenith(self):
+        camera_to_imu = np.array(
+            [[-1.0, 0.0, 0.0], [0.0, 0.0, 1.0], [0.0, 1.0, 0.0]]
+        )
+        view_zenith, _ = view_geometry.run(
+            0.0,
+            0.0,
+            0.0,
+            camera_to_imu_rotation=camera_to_imu,
+        )
+        self.assertAlmostEqual(view_zenith, 0.0)
+
+    def test_undistorted_look_vector_center_is_camera_boresight(self):
+        vectors = look_vectors.run(
+            100.0,
+            100.0,
+            1.0,
+            1.0,
+            3,
+            3,
+            distortion_coefficients=np.zeros(5),
+        )
+        np.testing.assert_allclose(vectors[1, 1], [0.0, 1.0, 0.0])
+
+    def test_loads_only_measured_camera_to_imu_rotations(self):
+        profile_path = os.path.join(self.temporary_directory.name, "camera_imu.json")
+        rotation = [[-1.0, 0.0, 0.0], [0.0, 0.0, 1.0], [0.0, 1.0, 0.0]]
+        with open(profile_path, "w", encoding="utf-8") as profile_file:
+            json.dump(
+                {
+                    "format": "LHMP_CAMERA_IMU_CALIBRATION_V1",
+                    "calibration_data_status": "measured",
+                    "rotation_camera_to_imu": rotation,
+                },
+                profile_file,
+            )
+        np.testing.assert_allclose(
+            calibration.load_camera_imu_calibration(profile_path), rotation
+        )
+
+        with self.assertRaisesRegex(ValueError, "must be measured and validated"):
+            calibration.load_camera_imu_calibration(
+                os.path.join(FIXTURE_DIRECTORY, "camera_imu_step_approx.json")
+            )
 
 
 if __name__ == "__main__":

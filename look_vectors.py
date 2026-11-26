@@ -1,6 +1,18 @@
 import numpy as np
+import cv2
 
-def run(fx, fy, u0, v0, width_p, height_p, physical_focal_length_mm, pixel_size_mm):
+
+def run(
+    fx,
+    fy,
+    u0,
+    v0,
+    width_p,
+    height_p,
+    physical_focal_length_mm=None,
+    pixel_size_mm=None,
+    distortion_coefficients=None,
+):
     """
     Generates a 3D array [Width, Height, 3] containing the local 
     normalized look vector for every individual pixel on the sensor.
@@ -25,11 +37,28 @@ def run(fx, fy, u0, v0, width_p, height_p, physical_focal_length_mm, pixel_size_
     :rtype: numpy.ndarray
     """
     
-    u_grid, v_grid = np.meshgrid(np.arange(width_p), np.arange(height_p)) # 1. Create a coordinate grid grid for columns (u) and rows (v)
-    x_local = (u_grid - u0) / fx # 2. Map coordinates using the intrinsic matrix formulation
-    y_local = np.ones_like(u_grid, dtype=np.float64) # Boresight direction
-    z_local = (v0 - v_grid) / fy                     # Invert row axis
-    v_local_stack = np.stack([x_local, y_local, z_local], axis=-1) # 3. Stack components into an un-normalized 3D array matrix
+    if fx <= 0 or fy <= 0 or width_p <= 0 or height_p <= 0:
+        raise ValueError("Focal lengths and image dimensions must be positive")
+    u_grid, v_grid = np.meshgrid(np.arange(width_p), np.arange(height_p))
+    if distortion_coefficients is None:
+        x_local = (u_grid - u0) / fx
+        y_image = (v_grid - v0) / fy
+    else:
+        camera_matrix = np.array(
+            [[fx, 0.0, u0], [0.0, fy, v0], [0.0, 0.0, 1.0]],
+            dtype=np.float64,
+        )
+        points = np.stack([u_grid, v_grid], axis=-1).astype(np.float64)
+        normalized = cv2.undistortPoints(
+            points.reshape(-1, 1, 2),
+            camera_matrix,
+            np.asarray(distortion_coefficients, dtype=np.float64),
+        ).reshape(height_p, width_p, 2)
+        x_local = normalized[..., 0]
+        y_image = normalized[..., 1]
+    y_local = np.ones_like(u_grid, dtype=np.float64)
+    z_local = -y_image
+    v_local_stack = np.stack([x_local, y_local, z_local], axis=-1)
     magnitudes = np.linalg.norm(v_local_stack, axis=-1, keepdims=True)  # 4. Normalize each vector to unit length
     v_local_normalized = v_local_stack / magnitudes
     

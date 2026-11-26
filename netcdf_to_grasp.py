@@ -2,7 +2,6 @@
 
 import argparse
 from datetime import datetime, timedelta, timezone
-import json
 import math
 import os
 import re
@@ -15,6 +14,11 @@ import numpy as np
 DEFAULT_INPUT_DIRECTORY = r"B:\Hampton_University\HU_Polarimetry_Lab\L1_data"
 CHANNELS = ("blue", "green", "red")
 STOKES_COMPONENTS = ("I", "Q", "U")
+REDUCED_STOKES_VARIABLES = {
+    f"{component}_{channel}_reduced"
+    for channel in CHANNELS
+    for component in STOKES_COMPONENTS
+}
 REQUIRED_VARIABLES = {
     "time",
     "GPS_longitude",
@@ -24,76 +28,68 @@ REQUIRED_VARIABLES = {
     "solar_altitude",
     "view_azimuth",
     "view_zenith",
-}.union(
-    f"{component}_{channel}"
-    for channel in CHANNELS
-    for component in STOKES_COMPONENTS
-)
+}.union(REDUCED_STOKES_VARIABLES)
 
 
-def load_grasp_calibration(path):
-    """Load channel calibration and validate values needed for a GRASP export."""
-    with open(path, "r", encoding="utf-8") as calibration_file:
-        profile = json.load(calibration_file)
-
-    calibration_status = str(profile.get("calibration_data_status", "")).lower()
-    if "synthetic" in calibration_status:
-        raise ValueError("Synthetic calibration profiles cannot be used for GRASP conversion")
-
-    if profile.get("format") != "LHMP_GRASP_CALIBRATION_V1":
-        raise ValueError("Calibration profile format must be LHMP_GRASP_CALIBRATION_V1")
-    if profile.get("stokes_reference_frame") != "grasp_scattering_plane":
+def _read_l1_grasp_metadata(dataset, path):
+    """Read calibration values already applied and recorded during L1 processing."""
+    if not getattr(dataset, "radiometric_calibration_applied", "") or (
+        str(dataset.radiometric_calibration_applied).lower() == "false"
+    ):
         raise ValueError(
-            "Calibration profile must confirm that Q/U are in GRASP's scattering-plane frame"
+            f"{path} has no L1 radiometric calibration; rerun L1_file_save.run "
+            "with stokes_calibration_path"
         )
+    if getattr(dataset, "stokes_reference_frame", "") != "grasp_scattering_plane":
+        raise ValueError(
+            f"{path} Q/U values are not in GRASP's validated scattering-plane frame"
+        )
+    if getattr(dataset, "camera_intrinsics_calibration_status", "") != "checkerboard_calibrated":
+        raise ValueError(f"{path} has no checkerboard camera intrinsic calibration")
+    if getattr(dataset, "camera_to_imu_alignment_status", "") != "validated":
+        raise ValueError(f"{path} has no validated camera-to-IMU alignment")
 
     try:
-        land_percent = float(profile["land_percent"])
-        channel_profiles = profile["channels"]
-    except (KeyError, TypeError, ValueError) as error:
-        raise ValueError("Calibration profile is missing land_percent or channels") from error
-    if not math.isfinite(land_percent) or not 0 <= land_percent <= 100:
-        raise ValueError("land_percent must be a finite value between 0 and 100")
-
-    validated_channels = {}
-    for channel in CHANNELS:
-        try:
-            settings = channel_profiles[channel]
-            wavelength_um = float(settings["wavelength_um"])
-            reduced_radiance_per_dn = float(settings["reduced_radiance_per_dn"])
-            dark_stokes_dn = settings["dark_stokes_dn"]
-            dark_offsets = {
-                component: float(dark_stokes_dn[component])
-                for component in STOKES_COMPONENTS
+        land_percent = float(dataset.grasp_land_percent)
+        channels = {}
+        for channel in CHANNELS:
+            variable = dataset.variables[f"I_{channel}_reduced"]
+            wavelength_um = float(variable.wavelength_um)
+            scale = float(variable.reduced_radiance_per_dn)
+            channels[channel] = {
+                "wavelength_um": wavelength_um,
+                "reduced_radiance_per_dn": scale,
             }
-        except (KeyError, TypeError, ValueError) as error:
-            raise ValueError(
-                f"Calibration profile is missing valid {channel} wavelength, "
-                "reduced_radiance_per_dn, or dark_stokes_dn values"
-            ) from error
-
-        if not math.isfinite(wavelength_um) or wavelength_um <= 0:
-            raise ValueError(f"{channel} wavelength_um must be finite and positive")
-        if not math.isfinite(reduced_radiance_per_dn) or reduced_radiance_per_dn <= 0:
-            raise ValueError(
-                f"{channel} reduced_radiance_per_dn must be finite and positive"
-            )
-        if not all(math.isfinite(value) for value in dark_offsets.values()):
-            raise ValueError(f"{channel} dark Stokes offsets must be finite")
-
-        validated_channels[channel] = {
-            "wavelength_um": wavelength_um,
-            "reduced_radiance_per_dn": reduced_radiance_per_dn,
-            "dark_stokes_dn": dark_offsets,
-        }
-    wavelengths = [validated_channels[channel]["wavelength_um"] for channel in CHANNELS]
+            for component in ("Q", "U"):
+                stokes_variable = dataset.variables[f"{component}_{channel}_reduced"]
+                if not math.isclose(
+                    float(stokes_variable.wavelength_um), wavelength_um, rel_tol=0.0, abs_tol=1e-12
+                ) or not math.isclose(
+                    float(stokes_variable.reduced_radiance_per_dn),
+                    scale,
+                    rel_tol=0.0,
+                    abs_tol=1e-12,
+                ):
+                    raise ValueError(f"{path} {component}/{channel} calibration differs from I")
+    except (AttributeError, KeyError, TypeError, ValueError) as error:
+        raise ValueError(f"{path} is missing L1 GRASP calibration metadata") from error
+    if not math.isfinite(land_percent) or not 0 <= land_percent <= 100:
+        raise ValueError(f"{path} has an invalid grasp_land_percent")
+    if any(
+        not math.isfinite(values["wavelength_um"])
+        or values["wavelength_um"] <= 0
+        or not math.isfinite(values["reduced_radiance_per_dn"])
+        or values["reduced_radiance_per_dn"] <= 0
+        for values in channels.values()
+    ):
+        raise ValueError(f"{path} has invalid L1 channel calibration values")
+    wavelengths = [channels[channel]["wavelength_um"] for channel in CHANNELS]
     if any(right <= left for left, right in zip(wavelengths, wavelengths[1:])):
-        raise ValueError("Channel wavelengths must be in increasing blue/green/red order")
-
-    return {
-        "land_percent": land_percent,
-        "channels": validated_channels,
-    }
+        raise ValueError(f"{path} channel wavelengths are not increasing")
+    for name in REDUCED_STOKES_VARIABLES:
+        if getattr(dataset.variables[name], "units", "") != "1":
+            raise ValueError(f"{path} {name} must contain dimensionless reduced radiance")
+    return {"land_percent": land_percent, "channels": channels}
 
 
 def _validate_input_file(path, require_spatial_calibration):
@@ -105,7 +101,7 @@ def _validate_input_file(path, require_spatial_calibration):
                     f"{path} is raw-only or incomplete; missing variables: "
                     f"{', '.join(sorted(missing))}"
                 )
-            stokes_shape = dataset.variables["I_blue"].shape
+            stokes_shape = dataset.variables["I_blue_reduced"].shape
             if len(stokes_shape) != 3:
                 raise ValueError(f"{path}: Stokes measurements must have time and two pixel dimensions")
             pixel_variables = REQUIRED_VARIABLES - {
@@ -130,6 +126,7 @@ def _validate_input_file(path, require_spatial_calibration):
                     f"{path} does not record raw dark/flat-field calibration. "
                     "Reprocess the raw file with L1_file_save.run(raw_calibration_path=...)."
                 )
+            _read_l1_grasp_metadata(dataset, path)
             time_units = getattr(dataset.variables["time"], "units", "")
             if not time_units.startswith("seconds after "):
                 raise ValueError(f"{path}: time units must start with 'seconds after '")
@@ -168,15 +165,13 @@ def _sample_frame(dataset, time_index, row_slice, column_slice, calibration):
     for channel in CHANNELS:
         stokes[channel] = {}
         for component in STOKES_COMPONENTS:
-            raw = _finite_sample(
-                dataset.variables[f"{component}_{channel}"],
+            reduced = _finite_sample(
+                dataset.variables[f"{component}_{channel}_reduced"],
                 time_index,
                 row_slice,
                 column_slice,
             )
-            dark = calibration["channels"][channel]["dark_stokes_dn"][component]
-            scale = calibration["channels"][channel]["reduced_radiance_per_dn"]
-            stokes[channel][component] = (raw - dark) * scale
+            stokes[channel][component] = reduced
 
     longitude = float(dataset.variables["GPS_longitude"][time_index])
     latitude = float(dataset.variables["GPS_latitude"][time_index])
@@ -268,7 +263,7 @@ def _pixel_line(
 
 def _count_valid_cells(path, stride, calibration):
     with nc.Dataset(path, "r") as dataset:
-        shape = dataset.variables["I_blue"].shape
+        shape = dataset.variables["I_blue_reduced"].shape
         row_slice = slice(0, shape[1], stride)
         column_slice = slice(0, shape[2], stride)
         valid_cells = 0
@@ -283,7 +278,7 @@ def _count_valid_cells(path, stride, calibration):
 
 def _write_sdata(path, output_path, stride, calibration):
     with nc.Dataset(path, "r") as dataset:
-        stokes_shape = dataset.variables["I_blue"].shape
+        stokes_shape = dataset.variables["I_blue_reduced"].shape
         row_slice = slice(0, stokes_shape[1], stride)
         column_slice = slice(0, stokes_shape[2], stride)
         rows = np.arange(stokes_shape[1])[row_slice]
@@ -325,7 +320,7 @@ def _write_sdata(path, output_path, stride, calibration):
                         f"{len(pixel_indices)} {timestamp} 70000.0 0 0 "
                         ": NPIXELS TIMESTAMP HOBS_m NSURF IFGAS\n"
                     )
-                    solar_zenith_grasp = 180.0 - solar_altitude
+                    solar_zenith_grasp = 90.0 + solar_altitude
                     for row_index, column_index in pixel_indices:
                         view_zenith_grasp = 180.0 - geometry["view_zenith"][
                             row_index, column_index
@@ -372,24 +367,23 @@ def _write_sdata(path, output_path, stride, calibration):
 def convert_nc_to_grasp(
     nc_path,
     output_sdata_path,
-    calibration_path,
     pixel_stride=128,
     require_spatial_calibration=True,
 ):
     """Convert one calibrated LHMP Level 1 NetCDF file to GRASP SDATA 2.0."""
     if not isinstance(pixel_stride, int) or pixel_stride < 1:
         raise ValueError("pixel_stride must be a positive integer")
-    calibration = load_grasp_calibration(calibration_path)
     _validate_input_file(nc_path, require_spatial_calibration)
+    with nc.Dataset(nc_path, "r") as dataset:
+        profile = _read_l1_grasp_metadata(dataset, nc_path)
     os.makedirs(os.path.dirname(os.path.abspath(output_sdata_path)), exist_ok=True)
-    _write_sdata(nc_path, output_sdata_path, pixel_stride, calibration)
+    _write_sdata(nc_path, output_sdata_path, pixel_stride, profile)
     return output_sdata_path
 
 
 def convert_directory(
     input_directory,
     output_directory,
-    calibration_path,
     pixel_stride=128,
     require_spatial_calibration=True,
 ):
@@ -404,13 +398,14 @@ def convert_directory(
     if not paths:
         raise ValueError(f"No NetCDF files found in {input_directory}")
 
-    profile = load_grasp_calibration(calibration_path)
     for path in paths:
         _validate_input_file(path, require_spatial_calibration)
 
     os.makedirs(output_directory, exist_ok=True)
     outputs = []
     for path in paths:
+        with nc.Dataset(path, "r") as dataset:
+            profile = _read_l1_grasp_metadata(dataset, path)
         output_path = os.path.join(
             output_directory, os.path.splitext(os.path.basename(path))[0] + ".sdat"
         )
@@ -432,11 +427,6 @@ def main(argv=None):
         help="Output SDATA file for a single input file; otherwise an output directory",
     )
     parser.add_argument(
-        "--calibration",
-        required=True,
-        help="JSON profile with measured wavelength and reduced-radiance calibration",
-    )
-    parser.add_argument(
         "--pixel-stride",
         type=int,
         default=128,
@@ -452,7 +442,6 @@ def main(argv=None):
             outputs = convert_directory(
                 args.input,
                 output_directory,
-                args.calibration,
                 pixel_stride=args.pixel_stride,
             )
         else:
@@ -461,7 +450,6 @@ def main(argv=None):
                 convert_nc_to_grasp(
                     args.input,
                     output_path,
-                    args.calibration,
                     pixel_stride=args.pixel_stride,
                 )
             ]

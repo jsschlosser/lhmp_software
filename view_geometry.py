@@ -1,6 +1,12 @@
 import numpy as np
 
-def run(roll_deg, pitch_deg, yaw_deg, pixel_look_vectors=None):
+def run(
+    roll_deg,
+    pitch_deg,
+    yaw_deg,
+    pixel_look_vectors=None,
+    camera_to_imu_rotation=None,
+):
     """
     Calculates View Zenith Angle (VZA) and View Azimuth Angle (VAA) 
     from system Roll, Pitch, and Yaw. Supports both single coordinate vectors 
@@ -21,6 +27,8 @@ def run(roll_deg, pitch_deg, yaw_deg, pixel_look_vectors=None):
                          or an ND array where the last dimension is 3, such as 
                          (width, height, 3). Defaults to [0.0, 1.0, 0.0] (center optical axis).
     :type pixel_look_vectors: list or numpy.ndarray, optional
+    :param camera_to_imu_rotation: Optional 3x3 rotation mapping camera-frame vectors
+                         into IMU-frame coordinates (column-vector convention).
     :return: A tuple containing the View Zenith Angle (VZA) and View Azimuth Angle (VAA) in degrees.
              Returns scalar floats if pixel_look_vectors is 1D, or numpy arrays if pixel_look_vectors is ND.
     :rtype: tuple
@@ -35,6 +43,20 @@ def run(roll_deg, pitch_deg, yaw_deg, pixel_look_vectors=None):
         v_local = np.array([0.0, 1.0, 0.0])
     else:
         v_local = np.asarray(pixel_look_vectors)
+    if camera_to_imu_rotation is not None:
+        camera_to_imu_rotation = np.asarray(camera_to_imu_rotation, dtype=np.float64)
+        if (
+            camera_to_imu_rotation.shape != (3, 3)
+            or not np.all(np.isfinite(camera_to_imu_rotation))
+            or not np.allclose(
+                camera_to_imu_rotation.T @ camera_to_imu_rotation,
+                np.eye(3),
+                atol=1e-6,
+            )
+            or not np.isclose(np.linalg.det(camera_to_imu_rotation), 1.0, atol=1e-6)
+        ):
+            raise ValueError("camera_to_imu_rotation must be a proper 3x3 rotation matrix")
+        v_local = np.dot(v_local, camera_to_imu_rotation.T)
         
     # 3. Structural Aerospace Rotation Matrices
     R_y = np.array([
